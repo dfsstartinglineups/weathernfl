@@ -2,7 +2,6 @@
 // STATE MANAGEMENT & FIREBASE (MLB STYLE)
 // ==========================================
 let savedScoreboardState = localStorage.getItem('nflScoreboardMode');
-// Default to false (Expanded View) for desktop, just like the MLB site
 let globalScoreboardMode = savedScoreboardState !== null ? savedScoreboardState === 'true' : false; 
 
 window.HAS_SHOWN_TUTORIAL = false;
@@ -54,10 +53,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (mainContainer) mainContainer.innerHTML = noDataHtml;
         }
     });
+
+    // Handle Radar Modal Dismissal
+    const radarModal = document.getElementById('radarModal');
+    if (radarModal) {
+        radarModal.addEventListener('hidden.bs.modal', () => {
+            const iframe = document.getElementById('radarFrame');
+            if (iframe) iframe.src = ''; 
+        });
+    }
 });
 
 // ==========================================
-// CARD TOGGLING & TUTORIAL LOGIC
+// CARD TOGGLING & RADAR LOGIC
 // ==========================================
 window.toggleSingleCard = function(e, gameId) {
     if (e && e.target.closest('a, button, input, label, [data-bs-toggle="collapse"]')) return; 
@@ -100,6 +108,27 @@ window.toggleAllWeatherCards = function() {
     });
 };
 
+window.showRadar = function(url, venueName) {
+    const modalElement = document.getElementById('radarModal');
+    const modalTitle = document.querySelector('#radarModal .modal-title');
+    const iframe = document.getElementById('radarFrame');
+    
+    if(modalTitle) modalTitle.innerText = `Radar: ${venueName}`;
+
+    // Requires bootstrap to be loaded globally from CDN
+    const myModal = bootstrap.Modal.getOrCreateInstance(modalElement);
+
+    if(iframe) iframe.src = '';
+
+    const loadMap = function () {
+        if(iframe) iframe.src = url; 
+        modalElement.removeEventListener('shown.bs.modal', loadMap); 
+    };
+
+    modalElement.addEventListener('shown.bs.modal', loadMap);
+    myModal.show();
+}
+
 function generateMatchupAnalysis(weather, isDome) {
     if (isDome) return "✅ <b>Dome Environment:</b> Controlled climate with zero weather impact. Perfect passing conditions.";
     
@@ -137,12 +166,10 @@ function createGameCard(gameId, game, isSingleTeam) {
         bgClass = "bg-weather-cloudy";
     }
 
-    // Using ESPN's NFL logo endpoints
     const awayLogo = `https://a.espncdn.com/i/teamlogos/nfl/500/${game.away_id.toLowerCase()}.png`;
     const homeLogo = `https://a.espncdn.com/i/teamlogos/nfl/500/${game.home_id.toLowerCase()}.png`;
 
     const weatherEmojiLine = isDome ? `Roof Closed 🌡️${w.temp}°` : `🌧️${w.precip}" 🌡️${w.temp}° 💨${w.windSpeed}mph`;
-    
     const showRibbon = globalScoreboardMode ? 'block' : 'none';
     const showFull = globalScoreboardMode ? 'none' : 'block';
     
@@ -150,6 +177,46 @@ function createGameCard(gameId, game, isSingleTeam) {
     let windArrow = "💨";
     let windCss = "bg-secondary text-white";
     
+    const stadiumName = game.stadium ? game.stadium.name : "TBD Location";
+    const stadiumLat = game.stadium ? game.stadium.lat : 39.0;
+    const stadiumLon = game.stadium ? game.stadium.lon : -95.0;
+    
+    // Inject Dynamic Radar Coordinates (Windy Widget)
+    const radarUrl = `https://embed.windy.com/embed2.html?lat=${stadiumLat}&lon=${stadiumLon}&detailLat=${stadiumLat}&detailLon=${stadiumLon}&width=650&height=450&zoom=11&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1`;
+
+    // Render Hourly Forecast or Dome Fallback
+    let hourlyHtml = '';
+    if (isDome) {
+        hourlyHtml = `<div class="text-center mt-2"><small class="text-muted">Indoor Conditions Controlled</small></div>`;
+    } else if (w.hourly && w.hourly.length > 0) {
+        const hoursMarkup = w.hourly.map((h) => {
+            const dateObj = h.timestamp ? new Date(h.timestamp) : new Date();
+            if(!h.timestamp) dateObj.setHours(h.hour || 12, 0, 0, 0); // fallback
+
+            const hr12 = dateObj.getHours() % 12 || 12;
+            const ampm = dateObj.getHours() >= 12 ? 'PM' : 'AM';
+            let icon = '☀️';
+            
+            const isNight = dateObj.getHours() >= 20 || dateObj.getHours() < 6;
+            if (h.precipChance >= 30) {
+                icon = h.isThunderstorm ? '⛈️' : (h.isSnow ? '🌨️' : '🌧️');
+            } else if (h.precipChance > 0) {
+                icon = '⛅';
+            } else if (isNight) {
+                icon = '🌙';
+            }
+
+            return `
+                <div class="hour-card">
+                    <div class="hour-time">${hr12}${ampm}</div>
+                    <div class="hour-icon">${icon}</div>
+                    <div class="hour-pop">${h.precipChance >= 20 ? h.precipChance + '%' : '&nbsp;'}</div>
+                    <div class="hour-temp">${h.temp !== undefined ? h.temp + '°' : '--'}</div>
+                </div>`;
+        }).join('');
+        hourlyHtml = `<div class="hourly-scroll-container">${hoursMarkup}</div>`;
+    }
+
     const card = document.createElement('div');
     card.className = isSingleTeam ? 'w-100 animate-card mb-2 px-1' : 'col-md-6 col-lg-4 col-xl-3 animate-card mb-2 px-1';
     card.id = `game-${gameId}`;
@@ -174,7 +241,7 @@ function createGameCard(gameId, game, isSingleTeam) {
                         <img src="${homeLogo}" style="width: 16px; height: 16px; object-fit: contain;" onerror="this.style.display='none'">
                         <span class="fw-bold text-dark lh-1" style="font-size: 0.75rem;">${game.home_id}</span>
                     </div>
-                    <div class="text-truncate text-end fw-bold flex-grow-1 ms-1" style="font-size: 0.7rem; opacity: 0.75;">${game.stadium?.name || 'TBD'}</div>
+                    <div class="text-truncate text-end fw-bold flex-grow-1 ms-1" style="font-size: 0.7rem; opacity: 0.75;">${stadiumName}</div>
                 </div>
             </div>
 
@@ -182,7 +249,7 @@ function createGameCard(gameId, game, isSingleTeam) {
                 <div class="card-body px-2 pt-2 pb-2"> 
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="badge bg-light text-dark border">${game.status}</span>
-                        <span class="stadium-name text-truncate text-end flex-grow-1 ms-2" style="font-size: 0.8rem; font-weight: 600;">${game.stadium?.name || 'TBD'}</span>
+                        <span class="stadium-name text-truncate text-end flex-grow-1 ms-2" style="font-size: 0.8rem; font-weight: 600;">${stadiumName}</span>
                     </div>
                     
                     <div class="d-flex justify-content-between align-items-center px-1 mb-1">
@@ -214,6 +281,14 @@ function createGameCard(gameId, game, isSingleTeam) {
                             <div class="fw-bold">${w.windSpeed} <span style="font-size:0.7em">mph</span></div>
                             <span class="wind-badge ${windCss}" style="font-size: 0.55rem; white-space: nowrap; display: inline-block; padding: 2px 4px;">${windArrow}</span>
                         </div>
+                    </div>
+                    
+                    ${hourlyHtml}
+                    
+                    <div class="mt-2 mb-2">
+                        <button class="btn btn-sm btn-outline-primary w-100 py-1 fw-bold" style="font-size: 0.8rem;" onclick="showRadar('${radarUrl}', '${stadiumName}')">
+                            🗺️ View Live Radar Map
+                        </button>
                     </div>
                     
                     <div class="analysis-box">
