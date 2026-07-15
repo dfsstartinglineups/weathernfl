@@ -4,7 +4,7 @@ import json
 import firebase_admin
 from firebase_admin import credentials, db
 
-# 1. Initialize Firebase
+# 1. Initialize Firebase 
 if not firebase_admin._apps:
     raw_key = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
     if raw_key:
@@ -19,12 +19,25 @@ with open('data/stadiums.json', 'r') as f:
         stadiums_dict[s['id']] = s
 
 def fetch_nfl_schedule():
-    url = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
-    try:
-        data = requests.get(url, timeout=10).json()
-        return data.get('events', [])
-    except:
-        return []
+    # We query both Preseason (1) and Regular Season (2) to ensure we never miss a game window
+    urls = [
+        "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?seasontype=1",
+        "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?seasontype=2",
+        "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?seasontype=3" # Postseason
+    ]
+    
+    all_events = []
+    for url in urls:
+        try:
+            data = requests.get(url, timeout=10).json()
+            events = data.get('events', [])
+            # ESPN sometimes returns empty arrays for out-of-season types; we only append if games exist
+            if events:
+                all_events.extend(events)
+        except Exception as e:
+            print(f"Error fetching {url}: {e}")
+            
+    return all_events
 
 def fetch_open_meteo(lat, lon):
     url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,wind_speed_10m,precipitation&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch"
@@ -35,7 +48,7 @@ def fetch_open_meteo(lat, lon):
         return {}
 
 def main():
-    print("🏈 Fetching ESPN NFL Schedule & Weather...")
+    print("🏈 Fetching ESPN NFL Schedule (Preseason & Regular) & Weather...")
     events = fetch_nfl_schedule()
     
     live_state = {}
@@ -55,9 +68,9 @@ def main():
             
         live_state[game_id] = {
             "game_info": event['name'],
-            "status": event['status']['type']['state'], # 'pre', 'in', 'post'
-            "game_time": event['date'], # NEW: Raw UTC Timestamp
-            "clock": event['status']['type'].get('shortDetail', ''), # NEW: In-game clock (e.g. Q3 14:00)
+            "status": event['status']['type']['state'], 
+            "game_time": event['date'], 
+            "clock": event['status']['type'].get('shortDetail', ''), 
             "home_id": home_abbr,
             "away_id": away_competitor['team']['abbreviation'] if away_competitor else "TBD",
             "home_team": home_competitor['team']['displayName'] if home_competitor else "TBD",
@@ -73,7 +86,7 @@ def main():
     # Push straight to Firebase
     if firebase_admin._apps:
         db.reference('nfl_weather').set(live_state)
-        print("✅ Firebase updated successfully.")
+        print(f"✅ Firebase updated successfully with {len(live_state)} active/upcoming games.")
     else:
         print("⚠️ Firebase not initialized. Skipping push.")
 
