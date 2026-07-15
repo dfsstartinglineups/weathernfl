@@ -1,0 +1,290 @@
+[
+    {
+        "id": "ARI",
+        "name": "State Farm Stadium",
+        "team": "Arizona Cardinals",
+        "lat": 33.5276,
+        "lon": -112.2626,
+        "roof": "Retractable",
+        "surface": "Grass"
+    },
+    {
+        "id": "ATL",
+        "name": "Mercedes-Benz Stadium",
+        "team": "Atlanta Falcons",
+        "lat": 33.7553,
+        "lon": -84.4006,
+        "roof": "Retractable",
+        "surface": "Turf"
+    },
+    {
+        "id": "BAL",
+        "name": "M&T Bank Stadium",
+        "team": "Baltimore Ravens",
+        "lat": 39.278,
+        "lon": -76.6227,
+        "roof": "Open",
+        "surface": "Grass"
+    },
+    {
+        "id": "BUF",
+        "name": "Highmark Stadium",
+        "team": "Buffalo Bills",
+        "lat": 42.7738,
+        "lon": -78.787,
+        "roof": "Open",
+        "surface": "Turf"
+    },
+    {
+        "id": "CAR",
+        "name": "Bank of America Stadium",
+        "team": "Carolina Panthers",
+        "lat": 35.2258,
+        "lon": -80.8528,
+        "roof": "Open",
+        "surface": "Turf"
+    },
+    {
+        "id": "CHI",
+        "name": "Soldier Field",
+        "team": "Chicago Bears",
+        "lat": 41.8623,
+        "lon": -87.6167,
+        "roof": "Open",
+        "surface": "Grass"
+    },
+    {
+        "id": "CIN",
+        "name": "Paycor Stadium",
+        "team": "Cincinnati Bengals",
+        "lat": 39.0955,
+        "lon": -84.5161,
+        "roof": "Open",
+        "surface": "Turf"
+    },
+    {
+        "id": "CLE",
+        "name": "Huntington Bank Field",
+        "team": "Cleveland Browns",
+        "lat": 41.5061,
+        "lon": -81.6995,
+        "roof": "Open",
+        "surface": "Grass"
+    },
+    {
+        "id": "DAL",
+        "name": "AT&T Stadium",
+        "team": "Dallas Cowboys",
+        "lat": 32.7473,
+        "lon": -97.0945,
+        "roof": "Retractable",
+        "surface": "Turf"
+    },
+    {
+        "id": "DEN",
+        "name": "Empower Field at Mile High",
+        "team": "Denver Broncos",
+        "lat": 39.7439,
+        "lon": -105.0201,
+        "roof": "Open",
+        "surface": "Grass"
+    },
+    {
+        "id": "DET",
+        "name": "Ford Field",
+        "team": "Detroit Lions",
+        "lat": 42.34,
+        "lon": -83.0456,
+        "roof": "Dome",
+        "surface": "Turf"
+    },
+    {
+        "id": "GB",
+        "name": "Lambeau Field",
+        "team": "Green Bay Packers",
+        "lat": 44.5013,
+        "lon": -88.0622,
+        "roof": "Open",
+        "surface": "Grass"
+    },
+    {
+        "id": "HOU",
+        "name": "NRG Stadium",
+        "team": "Houston Texans",
+        "lat": 29.6847,
+        "lon": -95.4107,
+        "roof": "Retractable",
+        "surface": "Turf"
+    },
+    {
+        "id": "IND",
+        "name": "Lucas Oil Stadium",
+        "team": "Indianapolis Colts",
+        "lat": 39.7601,
+        "lon": -86.1639,
+        "roof": "Retractable",
+        "surface": "Turf"
+    },
+    {
+        "id": "JAX",
+        "name": "EverBank Stadium",
+        "team": "Jacksonville Jaguars",
+        "lat": 30.3239,
+        "lon": -81.6373,
+        "roof": "Open",
+        "surface": "Grass"
+    },
+    {
+        "id": "KC",
+        "name": "GEHA Field at Arrowhead",
+        "team": "Kansas City Chiefs",
+        "lat": 39.0489,
+        "lon": -94.4839,
+        "roof": "Open",
+        "surface": "Grass"
+    },
+    {
+        "id": "LV",
+        "name": "Allegiant Stadium",
+        "team": "Las Vegas Raiders",
+        "lat": 36.0909,
+        "lon": -115.1833,
+        "roof": "Dome",
+        "surface": "Grass"
+    },
+    {
+        "id": "LAC",
+        "name": "SoFi Stadium",
+        "team": "Los Angeles Chargers",
+        "lat": 33.9534,
+        "lon": -118.3387,
+        "roof": "Dome",
+        "surface": "Turf"
+    },
+    {
+        "id": "LAR",
+        "name": "SoFi Stadium",
+        "team": "Los Angeles Rams",
+        "lat": 33.9534,
+        "lon": -118.3387,
+        "roof": "Dome",
+        "surface": "Turf"
+    },
+    {
+        "id": "MIA",
+        "name": "Hard Rock Stadium",
+        "team": "Miami Dolphins",
+        "lat": 25.958,
+        "lon": -80.2389,
+        "roof": "Open",
+        "surface": "Grass"
+    },
+    {
+        "id": "MIN",
+        "name": "U.S. Bank Stadium",
+        "team": "Minnesota Vikings",
+        "lat": 44.9735,
+        "lon": -93.2575,
+        "roof": "Dome",
+        "surface": "Turf"
+    },
+    {
+        "id": "NE",
+        "name": "Gillette Stadium",
+        "team": "New England Patriots",
+        "lat": 42.0909,
+        "lon": -71.2643,
+        "roof": "Open",
+        "surface": "Turf"
+    },
+    {
+        "id": "NO",
+        "name": "Caesars Superdome",
+        "team": "New Orleans Saints",
+        "lat": 29.9511,
+        "lon": -90.0812,
+        "roof": "Dome",
+        "surface": "Turf"
+    },
+    {
+        "id": "NYG",
+        "name": "MetLife Stadium",
+        "team": "New York Giants",
+        "lat": 40.8128,
+        "lon": -74.0742,
+        "roof": "Open",
+        "surface": "Turf"
+    },
+    {
+        "id": "NYJ",
+        "name": "MetLife Stadium",
+        "team": "New York Jets",
+        "lat": 40.8128,
+        "lon": -74.0742,
+        "roof": "Open",
+        "surface": "Turf"
+    },
+    {
+        "id": "PHI",
+        "name": "Lincoln Financial Field",
+        "team": "Philadelphia Eagles",
+        "lat": 39.9008,
+        "lon": -75.1675,
+        "roof": "Open",
+        "surface": "Grass"
+    },
+    {
+        "id": "PIT",
+        "name": "Acrisure Stadium",
+        "team": "Pittsburgh Steelers",
+        "lat": 40.4468,
+        "lon": -80.0158,
+        "roof": "Open",
+        "surface": "Grass"
+    },
+    {
+        "id": "SF",
+        "name": "Levi's Stadium",
+        "team": "San Francisco 49ers",
+        "lat": 37.4032,
+        "lon": -121.9698,
+        "roof": "Open",
+        "surface": "Grass"
+    },
+    {
+        "id": "SEA",
+        "name": "Lumen Field",
+        "team": "Seattle Seahawks",
+        "lat": 47.5952,
+        "lon": -122.3316,
+        "roof": "Open",
+        "surface": "Turf"
+    },
+    {
+        "id": "TB",
+        "name": "Raymond James Stadium",
+        "team": "Tampa Bay Buccaneers",
+        "lat": 27.9759,
+        "lon": -82.5033,
+        "roof": "Open",
+        "surface": "Grass"
+    },
+    {
+        "id": "TEN",
+        "name": "Nissan Stadium",
+        "team": "Tennessee Titans",
+        "lat": 36.1665,
+        "lon": -86.7713,
+        "roof": "Open",
+        "surface": "Turf"
+    },
+    {
+        "id": "WAS",
+        "name": "Commanders Field",
+        "team": "Washington Commanders",
+        "lat": 38.9076,
+        "lon": -76.8645,
+        "roof": "Open",
+        "surface": "Grass"
+    }
+]
