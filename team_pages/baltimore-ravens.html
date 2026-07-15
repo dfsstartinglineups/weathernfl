@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baltimore Ravens Weather & M&T Bank Stadium Conditions | NFL DFS</title>
+    <meta name="description" content="Check the latest Baltimore Ravens weather conditions at M&T Bank Stadium. Get live wind, rain, and turf data for daily fantasy sports and sports betting.">
+    <meta name="keywords" content="Baltimore Ravens weather, M&T Bank Stadium weather, NFL weather, fantasy football weather, DFS conditions">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SportsEvent",
+      "name": "Baltimore Ravens Home Game",
+      "location": {
+        "@type": "Place",
+        "name": "M&T Bank Stadium",
+        "address": "Baltimore Ravens Home City"
+      }
+    }
+    </script>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">Weather <span class="text-primary">NFL</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="teamDropdown" role="button" data-bs-toggle="dropdown">
+                            Select Team
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" style="max-height: 400px; overflow-y: auto;">
+                            <li><a class="dropdown-item" href="/team_pages/arizona-cardinals.html">Arizona Cardinals Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/atlanta-falcons.html">Atlanta Falcons Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/baltimore-ravens.html">Baltimore Ravens Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/buffalo-bills.html">Buffalo Bills Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/carolina-panthers.html">Carolina Panthers Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/chicago-bears.html">Chicago Bears Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/cincinnati-bengals.html">Cincinnati Bengals Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/cleveland-browns.html">Cleveland Browns Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/dallas-cowboys.html">Dallas Cowboys Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/denver-broncos.html">Denver Broncos Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/detroit-lions.html">Detroit Lions Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/green-bay-packers.html">Green Bay Packers Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/houston-texans.html">Houston Texans Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/indianapolis-colts.html">Indianapolis Colts Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/jacksonville-jaguars.html">Jacksonville Jaguars Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/kansas-city-chiefs.html">Kansas City Chiefs Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/las-vegas-raiders.html">Las Vegas Raiders Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/los-angeles-chargers.html">Los Angeles Chargers Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/los-angeles-rams.html">Los Angeles Rams Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/miami-dolphins.html">Miami Dolphins Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/minnesota-vikings.html">Minnesota Vikings Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/new-england-patriots.html">New England Patriots Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/new-orleans-saints.html">New Orleans Saints Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/new-york-giants.html">New York Giants Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/new-york-jets.html">New York Jets Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/philadelphia-eagles.html">Philadelphia Eagles Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/pittsburgh-steelers.html">Pittsburgh Steelers Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/san-francisco-49ers.html">San Francisco 49ers Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/seattle-seahawks.html">Seattle Seahawks Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/tampa-bay-buccaneers.html">Tampa Bay Buccaneers Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/tennessee-titans.html">Tennessee Titans Weather</a></li>
+<li><a class="dropdown-item" href="/team_pages/washington-commanders.html">Washington Commanders Weather</a></li>
+
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="text-center mb-4">
+            <h1 class="fw-bold text-dark">Baltimore Ravens Weather</h1>
+            <p class="text-muted">Live conditions for <strong>M&T Bank Stadium</strong> | Roof: Open | Surface: Grass</p>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center" id="single-team-container" data-team="BAL">
+                <div class="spinner-border spinner-border-sm text-primary mb-2"></div><br>
+                <span class="text-muted">Fetching live game data from Firebase...</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
