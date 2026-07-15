@@ -9,11 +9,17 @@
     <meta name="keywords" content="NFL weather, fantasy football weather, DFS weather, NFL stadium turf, NFL betting conditions, live wind speed NFL">
     <link rel="canonical" href="https://weathernfl.com/">
     
-    <meta property="og:title" content="Live NFL Weather & Turf Conditions">
+    <!-- OpenGraph / Social Meta -->
+    <meta property="og:title" content="Live NFL Weather & Turf Conditions - Weather NFL">
     <meta property="og:description" content="Check live wind speeds, rain forecasts, and stadium roof status before locking your fantasy football lineups.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://weathernfl.com/">
     
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@weathernfldaily">
+    
+    <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -29,34 +35,46 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-</head>
-<body class="bg-light">
     
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="/">Weather <span class="text-primary">NFL</span></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="#">Teams Hub</a></li>
-                </ul>
+    <style>
+        body { background-color: #f8f9fa; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; } 
+        .main-container { max-width: 1200px; margin: 30px auto; padding: 0 15px; }
+        .game-card { border: 1px solid #dee2e6; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; overflow: hidden; }
+        .weather-row { font-size: 0.9rem; border-top: 1px solid #f1f3f5; padding-top: 8px; margin-top: 8px; padding-bottom: 4px; }
+        .stadium-name { color: #6c757d; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .wind-badge { font-size: 0.85rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; display: inline-block; }
+        .analysis-box { background-color: rgba(255, 255, 255, 0.6); border-left: 4px solid #0d6efd; padding: 8px 12px; margin-top: 12px; font-size: 0.8rem; color: #495057; line-height: 1.4; border-radius: 0 4px 4px 0; }
+        .analysis-title { font-weight: 800; text-transform: uppercase; font-size: 0.7rem; color: #0d6efd; display: block; margin-bottom: 4px; letter-spacing: 0.5px; }
+        
+        /* Flowing Weather Gradients */
+        @keyframes weather-flow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .bg-weather-sunny { background: linear-gradient(-45deg, #e3f2fd, #e1f5fe, #f1f8e9); background-size: 300% 300%; animation: weather-flow 15s ease infinite; }
+        .bg-weather-cloudy { background: linear-gradient(-45deg, #f5f5f5, #e0e0e0, #eeeeee); background-size: 300% 300%; animation: weather-flow 20s ease infinite; }
+        .bg-weather-rain { background: linear-gradient(180deg, #e3f2fd, #cfd8dc, #eceff1); background-size: 200% 200%; animation: weather-flow 8s ease infinite; }
+        .bg-weather-storm { background: linear-gradient(-45deg, #e1bee7, #cfd8dc, #e0e0e0); background-size: 300% 300%; animation: weather-flow 10s ease infinite; }
+        .bg-weather-snow { background: linear-gradient(-45deg, #f3e5f5, #e3f2fd, #ffffff); background-size: 300% 300%; animation: weather-flow 15s ease infinite; }
+        .bg-weather-roof { background-color: #ffffff; }
+    </style>
+</head>
+<body>
+    
+    <nav class="navbar shadow-sm py-2 mb-0 sticky-top" style="background-color: #0f172a;">
+        <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <a href="/" class="navbar-brand text-white fw-bold m-0" style="font-style: italic; font-size: 1.6rem;">
+                Weather <span style="color: #5ac8fa;">NFL</span>
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="/" class="btn btn-sm btn-outline-light px-3 fw-bold" style="font-size: 0.75rem;">
+                    Full Slate
+                </a>
             </div>
         </div>
     </nav>
 
-    <div class="container mt-4">
+    <div class="main-container">
         <div class="text-center mb-4">
             <h1 class="fw-bold h2">Live NFL Weather & Stadium Conditions</h1>
             <p class="text-muted">Tracking wind, rain, and turf impacts for fantasy and betting.</p>
-        </div>
-
-        <!-- Toggle Controls -->
-        <div class="d-flex justify-content-end mb-3">
-            <button id="toggle-all-cards" class="btn btn-outline-dark btn-sm fw-bold shadow-sm" style="border-radius: 20px;">
-                🔽 COMPACT SCOREBOARD
-            </button>
         </div>
         
         <div id="games-container" class="row">
