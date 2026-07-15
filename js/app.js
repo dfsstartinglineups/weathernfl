@@ -5,6 +5,9 @@ let savedScoreboardState = localStorage.getItem('nflScoreboardMode');
 let globalScoreboardMode = savedScoreboardState !== null ? savedScoreboardState === 'true' : false; 
 
 window.HAS_SHOWN_TUTORIAL = false;
+let allGamesData = {};
+let currentSelectedWeek = null;
+let availableWeeks = [];
 
 const nflStyle = document.createElement('style');
 nflStyle.innerHTML = `
@@ -35,26 +38,25 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const db = firebase.database();
     db.ref('nfl_weather').on('value', (snapshot) => {
-        const data = snapshot.val();
-        const mainContainer = document.getElementById('games-container');
-        const singleTeamContainer = document.getElementById('team-weather-container');
+        allGamesData = snapshot.val() || {};
         
-        if(data) {
-            if(singleTeamContainer) {
-                const targetTeamId = window.TARGET_TEAM_ID;
-                const filtered = Object.entries(data).filter(([id, g]) => g.home_id === targetTeamId || g.away_id === targetTeamId);
-                renderGames(filtered, singleTeamContainer, true);
-            } else if(mainContainer) {
-                renderGames(Object.entries(data), mainContainer, false);
-            }
-        } else {
-            const noDataHtml = '<div class="col-12 text-center text-muted">No game data currently available.</div>';
-            if (singleTeamContainer) singleTeamContainer.innerHTML = noDataHtml;
-            if (mainContainer) mainContainer.innerHTML = noDataHtml;
+        // Extract unique weeks based on the 'week_order' assigned by Python
+        const weeksMap = new Map();
+        Object.values(allGamesData).forEach(g => {
+            if (g.week_label) weeksMap.set(g.week_label, g.week_order);
+        });
+        
+        // Sort weeks chronologically
+        availableWeeks = Array.from(weeksMap.entries()).sort((a,b) => a[1] - b[1]).map(e => e[0]);
+        
+        // Default to the first available week if not set
+        if (availableWeeks.length > 0 && (!currentSelectedWeek || !availableWeeks.includes(currentSelectedWeek))) {
+            currentSelectedWeek = availableWeeks[0];
         }
+
+        updateUI();
     });
 
-    // Handle Radar Modal Dismissal
     const radarModal = document.getElementById('radarModal');
     if (radarModal) {
         radarModal.addEventListener('hidden.bs.modal', () => {
@@ -65,10 +67,45 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// CARD TOGGLING & RADAR LOGIC
+// RENDER & FILTER CONTROLS
 // ==========================================
+function updateUI() {
+    const mainContainer = document.getElementById('games-container');
+    const singleTeamContainer = document.getElementById('team-weather-container');
+    
+    let filteredGames = Object.entries(allGamesData);
+
+    // If we are on the main hub, filter by the selected week
+    if (mainContainer) {
+        filteredGames = filteredGames.filter(([id, g]) => g.week_label === currentSelectedWeek);
+        renderGames(filteredGames, mainContainer, false);
+    } else if (singleTeamContainer) {
+        // If we are on a single team page, show both weeks for that specific team
+        const targetTeamId = window.TARGET_TEAM_ID;
+        filteredGames = filteredGames.filter(([id, g]) => g.home_id === targetTeamId || g.away_id === targetTeamId);
+        
+        // Sort them chronologically by week_order
+        filteredGames.sort((a, b) => (a[1].week_order || 0) - (b[1].week_order || 0));
+        
+        renderGames(filteredGames, singleTeamContainer, true);
+    }
+}
+
+// --- NEW HELPER: Toggle between current and next week ---
+window.toggleWeek = function() {
+    if (window.dismissTutorials) window.dismissTutorials();
+    if (availableWeeks.length > 1) {
+        if (currentSelectedWeek === availableWeeks[0]) {
+            currentSelectedWeek = availableWeeks[1];
+        } else {
+            currentSelectedWeek = availableWeeks[0];
+        }
+        updateUI();
+    }
+};
+
 window.toggleSingleCard = function(e, gameId) {
-    if (e && e.target.closest('a, button, input, label, [data-bs-toggle="collapse"]')) return; 
+    if (e && e.target.closest('a, button, input, label, [data-bs-toggle="collapse"], select')) return; 
     if (window.dismissTutorials) window.dismissTutorials();
     
     const card = document.getElementById(`game-${gameId}`);
@@ -116,7 +153,6 @@ window.showRadar = function(url, venueName) {
     if(modalTitle) modalTitle.innerText = `Radar: ${venueName}`;
 
     const myModal = bootstrap.Modal.getOrCreateInstance(modalElement);
-
     if(iframe) iframe.src = '';
 
     const loadMap = function () {
@@ -128,7 +164,6 @@ window.showRadar = function(url, venueName) {
     myModal.show();
 }
 
-// --- NEW HELPER: Truncates "Seattle Seahawks" to "Seahawks" ---
 function getShortTeamName(fullName) {
     if (!fullName || fullName === "TBD") return "TBD";
     const parts = fullName.split(" ");
@@ -154,6 +189,9 @@ function generateMatchupAnalysis(weather, isDome) {
     return notes.join("<br>");
 }
 
+// ==========================================
+// COMPONENT RENDERERS
+// ==========================================
 function createGameCard(gameId, game, isSingleTeam) {
     const isDome = game.stadium && game.stadium.roof === "Dome";
     const w = game.weather || { temp: 72, windSpeed: 0, precip: 0 };
@@ -172,7 +210,6 @@ function createGameCard(gameId, game, isSingleTeam) {
         bgClass = "bg-weather-cloudy";
     }
 
-    // --- TIMEZONE & BADGE LOGIC ---
     let badgeText = "TBD";
     let badgeStyle = "bg-light text-dark border";
 
@@ -191,7 +228,6 @@ function createGameCard(gameId, game, isSingleTeam) {
         badgeText = game.status ? game.status.toUpperCase() : "TBD";
     }
 
-    // --- FORMAT TEAM NAMES ---
     const awayShortName = getShortTeamName(game.away_team);
     const homeShortName = getShortTeamName(game.home_team);
 
@@ -210,7 +246,6 @@ function createGameCard(gameId, game, isSingleTeam) {
     const stadiumLat = game.stadium ? game.stadium.lat : 39.0;
     const stadiumLon = game.stadium ? game.stadium.lon : -95.0;
     
-    // Inject Dynamic Radar Coordinates (Windy Widget)
     const radarUrl = `https://embed.windy.com/embed2.html?lat=${stadiumLat}&lon=${stadiumLon}&detailLat=${stadiumLat}&detailLon=${stadiumLon}&width=650&height=450&zoom=11&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1`;
 
     let hourlyHtml = '';
@@ -245,13 +280,16 @@ function createGameCard(gameId, game, isSingleTeam) {
         hourlyHtml = `<div class="hourly-scroll-container">${hoursMarkup}</div>`;
     }
 
+    const singleTeamWeekLabel = isSingleTeam && game.week_label ? 
+        `<div class="text-center bg-dark text-white fw-bold py-1 w-100" style="font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase;">${game.week_label}</div>` : '';
+
     const card = document.createElement('div');
     card.className = isSingleTeam ? 'w-100 animate-card mb-2 px-1' : 'col-md-6 col-lg-4 col-xl-3 animate-card mb-2 px-1';
     card.id = `game-${gameId}`;
     
     card.innerHTML = `
         <div class="card game-card shadow-sm ${borderClass} ${bgClass}" style="overflow: hidden;">
-            
+            ${singleTeamWeekLabel}
             <div class="ribbon-view p-2 position-relative" onclick="toggleSingleCard(event, '${gameId}')" style="cursor: pointer; display: ${showRibbon};">
                 <div class="d-flex align-items-center mb-1">
                     <span class="badge ${badgeStyle} flex-shrink-0 px-2 py-1" style="font-size: 0.65rem;">${badgeText}</span>
@@ -338,32 +376,45 @@ function renderGames(gamesArray, container, isSingleTeam) {
         return;
     }
     
+    // Inject the Header, Week Toggle Button, and Expand Button ONLY for the main grid
+    if (!isSingleTeam && gamesArray.length > 0) {
+        
+        let expandTutorialHtml = '';
+        if (!window.HAS_SHOWN_TUTORIAL) {
+            expandTutorialHtml = `<div class="tutorial-tooltip text-primary fw-bold mb-1" style="font-size: 0.75rem; animation: tutorialBounce 1.5s infinite;">👇 Click to expand all cards</div>`;
+        }
+        
+        let weekBtnText = currentSelectedWeek === availableWeeks[0] ? 'Next Week ➡️' : '⬅️ Last Week';
+        let weekBtnDisplay = availableWeeks.length > 1 ? 'inline-block' : 'none'; 
+
+        const controlRow = document.createElement('div');
+        controlRow.className = 'col-12 mb-3 mt-1 position-relative d-flex flex-column align-items-center';
+        controlRow.innerHTML = `
+            <div class="fw-bold text-secondary mb-2" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">
+                📅 ${currentSelectedWeek}
+            </div>
+            ${expandTutorialHtml}
+            <div class="d-flex justify-content-center gap-2">
+                <button class="btn btn-sm shadow-sm fw-bold px-3 py-1 border border-primary text-primary" style="background-color: #f8f9fa; border-radius: 20px; display: ${weekBtnDisplay};" onclick="window.toggleWeek()">
+                    ${weekBtnText}
+                </button>
+                <button class="btn btn-sm shadow-sm fw-bold px-4 py-1 border border-secondary" style="background-color: #fff; color: #495057; border-radius: 20px;" onclick="window.toggleAllWeatherCards()">
+                    <span id="expand-toggle-icon">${globalScoreboardMode ? '▼' : '▲'}</span> 
+                    <span id="expand-toggle-text">${globalScoreboardMode ? 'Expand All Cards' : 'Collapse All Cards'}</span>
+                </button>
+            </div>
+        `;
+        container.appendChild(controlRow);
+        
+        setTimeout(window.dismissTutorials, 8000);
+    }
+    
     const row = document.createElement('div');
     row.className = 'row w-100 m-0 p-0 align-items-start';
     
     gamesArray.forEach(([gameId, game]) => {
         row.appendChild(createGameCard(gameId, game, isSingleTeam));
     });
-    
-    if (!isSingleTeam && gamesArray.length > 0) {
-        let expandTutorialHtml = '';
-        if (!window.HAS_SHOWN_TUTORIAL) {
-            expandTutorialHtml = `<div class="tutorial-tooltip text-primary fw-bold mb-1" style="font-size: 0.75rem; animation: tutorialBounce 1.5s infinite;">👇 Click to expand all cards</div>`;
-        }
-
-        const toggleRow = document.createElement('div');
-        toggleRow.className = 'col-12 text-center mb-3 mt-1 position-relative';
-        toggleRow.innerHTML = `
-            ${expandTutorialHtml}
-            <button class="btn btn-sm shadow-sm fw-bold px-4 py-1" style="background-color: #fff; border: 1px solid #dee2e6; color: #495057; border-radius: 20px;" onclick="window.toggleAllWeatherCards()">
-                <span id="expand-toggle-icon">${globalScoreboardMode ? '▼' : '▲'}</span> 
-                <span id="expand-toggle-text">${globalScoreboardMode ? 'Expand All Cards' : 'Collapse All Cards'}</span>
-            </button>
-        `;
-        container.appendChild(toggleRow);
-        
-        setTimeout(window.dismissTutorials, 8000);
-    }
     
     container.appendChild(row);
 }
