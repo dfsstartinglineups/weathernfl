@@ -1,0 +1,25 @@
+name: Update NFL Weather
+
+on:
+  schedule:
+    - cron: '*/15 16-23 * * 0'  # Runs every 15 mins on Sunday afternoons (UTC)
+  workflow_dispatch:
+
+jobs:
+  update-firebase:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          
+      - name: Install dependencies
+        run: pip install requests firebase-admin
+        
+      - name: Push to Firebase
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: python scripts/fetch_weather.py
