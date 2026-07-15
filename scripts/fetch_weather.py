@@ -4,7 +4,7 @@ import json
 import firebase_admin
 from firebase_admin import credentials, db
 
-# 1. Initialize Firebase (Ensure FIREBASE_SERVICE_ACCOUNT is set in GitHub Secrets)
+# 1. Initialize Firebase
 if not firebase_admin._apps:
     raw_key = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
     if raw_key:
@@ -48,15 +48,16 @@ def main():
         home_abbr = home_competitor['team']['abbreviation'] if home_competitor else "TBD"
         
         stadium_info = stadiums_dict.get(home_abbr, None)
-        weather_data = {"temperature_2m": 72, "wind_speed_10m": 0, "precipitation": 0} # Default Dome
+        weather_data = {"temperature_2m": 72, "wind_speed_10m": 0, "precipitation": 0} 
         
         if stadium_info and stadium_info['roof'] != "Dome":
             weather_data = fetch_open_meteo(stadium_info['lat'], stadium_info['lon'])
             
         live_state[game_id] = {
             "game_info": event['name'],
-            # CHANGED: Grabbing 'shortDetail' for the exact time/date/quarter instead of 'state'
-            "status": event['status']['type'].get('shortDetail', event['status']['type']['state']),
+            "status": event['status']['type']['state'], # 'pre', 'in', 'post'
+            "game_time": event['date'], # NEW: Raw UTC Timestamp
+            "clock": event['status']['type'].get('shortDetail', ''), # NEW: In-game clock (e.g. Q3 14:00)
             "home_id": home_abbr,
             "away_id": away_competitor['team']['abbreviation'] if away_competitor else "TBD",
             "home_team": home_competitor['team']['displayName'] if home_competitor else "TBD",
