@@ -9,17 +9,14 @@
     <meta name="keywords" content="NFL weather, fantasy football weather, DFS weather, NFL stadium turf, NFL betting conditions, live wind speed NFL">
     <link rel="canonical" href="https://weathernfl.com/">
     
-    <!-- OpenGraph / Social Meta -->
     <meta property="og:title" content="Live NFL Weather & Turf Conditions - Weather NFL">
     <meta property="og:description" content="Check live wind speeds, rain forecasts, and stadium roof status before locking your fantasy football lineups.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://weathernfl.com/">
     
-    <!-- Twitter Meta Tags -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@weathernfldaily">
     
-    <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -46,6 +43,14 @@
         .analysis-box { background-color: rgba(255, 255, 255, 0.6); border-left: 4px solid #0d6efd; padding: 8px 12px; margin-top: 12px; font-size: 0.8rem; color: #495057; line-height: 1.4; border-radius: 0 4px 4px 0; }
         .analysis-title { font-weight: 800; text-transform: uppercase; font-size: 0.7rem; color: #0d6efd; display: block; margin-bottom: 4px; letter-spacing: 0.5px; }
         
+        /* Hourly Forecast CSS */
+        .hourly-scroll-container { display: flex; overflow-x: auto; gap: 8px; padding: 8px 4px; margin-top: 8px; border-top: 1px solid rgba(0,0,0,0.05); scrollbar-width: thin; }
+        .hour-card { display: flex; flex: 1; flex-direction: column; align-items: center; min-width: 60px; text-align: center; }
+        .hour-time { font-size: 0.75rem; font-weight: 600; color: #6c757d; margin-bottom: 2px; }
+        .hour-icon { font-size: 1.3rem; line-height: 1; margin-bottom: 2px; }
+        .hour-pop { font-size: 0.65rem; color: #5ac8fa; font-weight: 700; line-height: 1; height: 12px; margin-bottom: 2px; }
+        .hour-temp { font-size: 0.85rem; font-weight: 600; color: #212529; line-height: 1; }
+
         /* Flowing Weather Gradients */
         @keyframes weather-flow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         .bg-weather-sunny { background: linear-gradient(-45deg, #e3f2fd, #e1f5fe, #f1f8e9); background-size: 300% 300%; animation: weather-flow 15s ease infinite; }
@@ -81,6 +86,21 @@
             <div class="col-12 text-center text-muted py-5">
                 <div class="spinner-border spinner-border-sm text-primary mb-2"></div><br>
                 Syncing with live database...
+            </div>
+        </div>
+    </div>
+
+    <!-- LIVE RADAR MODAL -->
+    <div class="modal fade" id="radarModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content shadow">
+                <div class="modal-header bg-dark text-white border-0 py-2">
+                    <h5 class="modal-title fw-bold" style="font-size: 1rem;">Live Weather Radar</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0 bg-light" style="height: 60vh;">
+                    <iframe id="radarFrame" src="" class="w-100 h-100 border-0" allowfullscreen></iframe>
+                </div>
             </div>
         </div>
     </div>
