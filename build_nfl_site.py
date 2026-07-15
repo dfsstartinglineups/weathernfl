@@ -2,15 +2,14 @@ import os
 import json
 
 def scaffold_repository():
-    print("🏈 Bootstrapping Complete NFL Weather Repository...")
+    print("🏈 Bootstrapping Complete NFL Weather Repository (No Workflows)...")
 
     # 1. Define Folder Structure
     directories = [
         "js",
         "scripts",
         "data",
-        "team_pages",
-        ".github/workflows"
+        "team_pages"
     ]
 
     for d in directories:
@@ -113,7 +112,7 @@ def main():
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="/">Weather <span class="text-primary">NFL</span></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-toggle="target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -145,7 +144,6 @@ def main():
         </div>
     </div>
 
-    <!-- Ensure your app.js handles the single-team-container data attribute to filter games! -->
     <script src="../js/app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
@@ -375,12 +373,11 @@ function renderGames(gamesArray, container) {
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="/">Weather <span class="text-primary">NFL</span></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-toggle="target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <!-- This will be populated dynamically or can be hardcoded here based on the py output -->
                     <li class="nav-item"><a class="nav-link" href="#">Teams Hub</a></li>
                 </ul>
             </div>
@@ -407,76 +404,13 @@ function renderGames(gamesArray, container) {
 </html>
 '''
 
-    # --- GITHUB ACTIONS: UPDATE_WEATHER.YML (Firebase Sync) ---
-    update_weather_yml = '''name: Update NFL Weather
-
-on:
-  schedule:
-    - cron: '*/15 16-23 * * 0'  # Runs every 15 mins on Sunday afternoons (UTC)
-  workflow_dispatch:
-
-jobs:
-  update-firebase:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.9'
-          
-      - name: Install dependencies
-        run: pip install requests firebase-admin
-        
-      - name: Push to Firebase
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: python scripts/fetch_weather.py
-'''
-
-    # --- GITHUB ACTIONS: BUILD_PAGES.YML (HTML Page Generator) ---
-    build_pages_yml = '''name: Build SEO Team Pages
-
-on:
-  push:
-    paths:
-      - 'scripts/generate_weather_pages.py'
-      - 'data/stadiums.json'
-  workflow_dispatch:
-
-jobs:
-  build-pages:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.9'
-          
-      - name: Generate Static HTML
-        run: python scripts/generate_weather_pages.py
-        
-      - name: Commit and Push Pages
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add team_pages/
-          git commit -m "Auto-generate team SEO pages" || exit 0
-          git push
-'''
-
     # 3. Write Files to Disk
     files_to_write = {
         "data/stadiums.json": json.dumps(stadiums_data, indent=4),
         "scripts/fetch_weather.py": fetch_weather_py,
         "scripts/generate_weather_pages.py": generate_weather_pages_py,
         "js/app.js": app_js,
-        "index.html": index_html,
-        ".github/workflows/update_weather.yml": update_weather_yml,
-        ".github/workflows/build_pages.yml": build_pages_yml
+        "index.html": index_html
     }
 
     for path, content in files_to_write.items():
@@ -484,7 +418,7 @@ jobs:
             f.write(content)
         print(f"📄 Generated file: {path}")
 
-    print("\n✅ Scaffold Complete! Your highly optimized NFL Weather repository structure is ready.")
+    print("\n✅ Scaffold Complete! Your highly optimized core files are ready locally.")
 
 if __name__ == "__main__":
     scaffold_repository()
