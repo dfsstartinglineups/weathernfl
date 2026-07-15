@@ -128,6 +128,13 @@ window.showRadar = function(url, venueName) {
     myModal.show();
 }
 
+// --- NEW HELPER: Truncates "Seattle Seahawks" to "Seahawks" ---
+function getShortTeamName(fullName) {
+    if (!fullName || fullName === "TBD") return "TBD";
+    const parts = fullName.split(" ");
+    return parts[parts.length - 1]; 
+}
+
 function generateMatchupAnalysis(weather, isDome) {
     if (isDome) return "✅ <b>Dome Environment:</b> Controlled climate with zero weather impact. Perfect passing conditions.";
     
@@ -170,11 +177,10 @@ function createGameCard(gameId, game, isSingleTeam) {
     let badgeStyle = "bg-light text-dark border";
 
     if (game.status === 'pre' && game.game_time) {
-        // Automatically converts UTC to the user's exact local timezone
         const d = new Date(game.game_time);
         const day = d.toLocaleDateString('en-US', { weekday: 'short' }); 
         const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-        badgeText = `${day} ${time}`; // Example: "Sun 1:00 PM"
+        badgeText = `${day} ${time}`; 
     } else if (game.status === 'in') {
         badgeText = game.clock || 'LIVE';
         badgeStyle = "bg-danger text-white border-danger";
@@ -184,6 +190,10 @@ function createGameCard(gameId, game, isSingleTeam) {
     } else {
         badgeText = game.status ? game.status.toUpperCase() : "TBD";
     }
+
+    // --- FORMAT TEAM NAMES ---
+    const awayShortName = getShortTeamName(game.away_team);
+    const homeShortName = getShortTeamName(game.home_team);
 
     const awayLogo = `https://a.espncdn.com/i/teamlogos/nfl/500/${game.away_id.toLowerCase()}.png`;
     const homeLogo = `https://a.espncdn.com/i/teamlogos/nfl/500/${game.home_id.toLowerCase()}.png`;
@@ -209,7 +219,7 @@ function createGameCard(gameId, game, isSingleTeam) {
     } else if (w.hourly && w.hourly.length > 0) {
         const hoursMarkup = w.hourly.map((h) => {
             const dateObj = h.timestamp ? new Date(h.timestamp) : new Date();
-            if(!h.timestamp) dateObj.setHours(h.hour || 12, 0, 0, 0); // fallback
+            if(!h.timestamp) dateObj.setHours(h.hour || 12, 0, 0, 0); 
 
             const hr12 = dateObj.getHours() % 12 || 12;
             const ampm = dateObj.getHours() >= 12 ? 'PM' : 'AM';
@@ -252,12 +262,12 @@ function createGameCard(gameId, game, isSingleTeam) {
                 <div class="d-flex align-items-center mt-1" style="gap: 4px;">
                     <div class="d-flex align-items-center flex-shrink-0" style="gap: 3px;">
                         <img src="${awayLogo}" style="width: 16px; height: 16px; object-fit: contain;" onerror="this.style.display='none'">
-                        <span class="fw-bold text-dark lh-1" style="font-size: 0.75rem;">${game.away_id}</span>
+                        <span class="fw-bold text-dark lh-1" style="font-size: 0.75rem;">${awayShortName}</span>
                     </div>
                     <span class="fw-bold text-muted flex-shrink-0 lh-1" style="font-size: 0.7rem;">@</span>
                     <div class="d-flex align-items-center flex-shrink-0" style="gap: 3px;">
                         <img src="${homeLogo}" style="width: 16px; height: 16px; object-fit: contain;" onerror="this.style.display='none'">
-                        <span class="fw-bold text-dark lh-1" style="font-size: 0.75rem;">${game.home_id}</span>
+                        <span class="fw-bold text-dark lh-1" style="font-size: 0.75rem;">${homeShortName}</span>
                     </div>
                     <div class="text-truncate text-end fw-bold flex-grow-1 ms-1" style="font-size: 0.7rem; opacity: 0.75;">${stadiumName}</div>
                 </div>
@@ -273,12 +283,12 @@ function createGameCard(gameId, game, isSingleTeam) {
                     <div class="d-flex justify-content-between align-items-center px-1 mb-1">
                         <div class="d-flex align-items-center text-truncate" style="width: 45%; min-width: 0;"> 
                             <img src="${awayLogo}" class="me-2" style="width: 24px; height: 24px; object-fit: contain; filter: drop-shadow(0px 1px 1px rgba(0,0,0,0.1));" onerror="this.style.display='none'">
-                            <div class="fw-bold lh-sm text-dark text-truncate" style="font-size: 0.95rem;">${game.away_team}</div>
+                            <div class="fw-bold lh-sm text-dark text-truncate" style="font-size: 0.95rem;">${awayShortName}</div>
                         </div>
                         <div class="text-center text-muted fw-bold" style="width: 10%; font-size: 0.8rem;">@</div>
                         <div class="d-flex align-items-center justify-content-end text-truncate" style="width: 45%; min-width: 0;"> 
                             <img src="${homeLogo}" class="me-2" style="width: 24px; height: 24px; object-fit: contain; filter: drop-shadow(0px 1px 1px rgba(0,0,0,0.1));" onerror="this.style.display='none'">
-                            <div class="fw-bold lh-sm text-dark text-truncate text-end" style="font-size: 0.95rem;">${game.home_team}</div>
+                            <div class="fw-bold lh-sm text-dark text-truncate text-end" style="font-size: 0.95rem;">${homeShortName}</div>
                         </div>
                     </div>
                     
