@@ -55,7 +55,8 @@ def main():
             
         live_state[game_id] = {
             "game_info": event['name'],
-            "status": event['status']['type']['state'],
+            # CHANGED: Grabbing 'shortDetail' for the exact time/date/quarter instead of 'state'
+            "status": event['status']['type'].get('shortDetail', event['status']['type']['state']),
             "home_id": home_abbr,
             "away_id": away_competitor['team']['abbreviation'] if away_competitor else "TBD",
             "home_team": home_competitor['team']['displayName'] if home_competitor else "TBD",
