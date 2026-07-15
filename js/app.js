@@ -115,7 +115,6 @@ window.showRadar = function(url, venueName) {
     
     if(modalTitle) modalTitle.innerText = `Radar: ${venueName}`;
 
-    // Requires bootstrap to be loaded globally from CDN
     const myModal = bootstrap.Modal.getOrCreateInstance(modalElement);
 
     if(iframe) iframe.src = '';
@@ -166,6 +165,26 @@ function createGameCard(gameId, game, isSingleTeam) {
         bgClass = "bg-weather-cloudy";
     }
 
+    // --- TIMEZONE & BADGE LOGIC ---
+    let badgeText = "TBD";
+    let badgeStyle = "bg-light text-dark border";
+
+    if (game.status === 'pre' && game.game_time) {
+        // Automatically converts UTC to the user's exact local timezone
+        const d = new Date(game.game_time);
+        const day = d.toLocaleDateString('en-US', { weekday: 'short' }); 
+        const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        badgeText = `${day} ${time}`; // Example: "Sun 1:00 PM"
+    } else if (game.status === 'in') {
+        badgeText = game.clock || 'LIVE';
+        badgeStyle = "bg-danger text-white border-danger";
+    } else if (game.status === 'post') {
+        badgeText = "FINAL";
+        badgeStyle = "bg-secondary text-white border-secondary";
+    } else {
+        badgeText = game.status ? game.status.toUpperCase() : "TBD";
+    }
+
     const awayLogo = `https://a.espncdn.com/i/teamlogos/nfl/500/${game.away_id.toLowerCase()}.png`;
     const homeLogo = `https://a.espncdn.com/i/teamlogos/nfl/500/${game.home_id.toLowerCase()}.png`;
 
@@ -184,7 +203,6 @@ function createGameCard(gameId, game, isSingleTeam) {
     // Inject Dynamic Radar Coordinates (Windy Widget)
     const radarUrl = `https://embed.windy.com/embed2.html?lat=${stadiumLat}&lon=${stadiumLon}&detailLat=${stadiumLat}&detailLon=${stadiumLon}&width=650&height=450&zoom=11&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1`;
 
-    // Render Hourly Forecast or Dome Fallback
     let hourlyHtml = '';
     if (isDome) {
         hourlyHtml = `<div class="text-center mt-2"><small class="text-muted">Indoor Conditions Controlled</small></div>`;
@@ -226,7 +244,7 @@ function createGameCard(gameId, game, isSingleTeam) {
             
             <div class="ribbon-view p-2 position-relative" onclick="toggleSingleCard(event, '${gameId}')" style="cursor: pointer; display: ${showRibbon};">
                 <div class="d-flex align-items-center mb-1">
-                    <span class="badge bg-light text-dark border flex-shrink-0 px-2 py-1" style="font-size: 0.65rem;">${game.status}</span>
+                    <span class="badge ${badgeStyle} flex-shrink-0 px-2 py-1" style="font-size: 0.65rem;">${badgeText}</span>
                     <div class="fw-bold text-dark text-center flex-grow-1 ms-2" style="font-size: 0.75rem; letter-spacing: 0.2px;">
                         ${weatherEmojiLine}
                     </div>
@@ -248,7 +266,7 @@ function createGameCard(gameId, game, isSingleTeam) {
             <div class="full-card-view" onclick="toggleSingleCard(event, '${gameId}')" style="cursor: pointer; display: ${showFull};">
                 <div class="card-body px-2 pt-2 pb-2"> 
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="badge bg-light text-dark border">${game.status}</span>
+                        <span class="badge ${badgeStyle}">${badgeText}</span>
                         <span class="stadium-name text-truncate text-end flex-grow-1 ms-2" style="font-size: 0.8rem; font-weight: 600;">${stadiumName}</span>
                     </div>
                     
