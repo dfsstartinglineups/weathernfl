@@ -6,8 +6,7 @@
     </clipPath>
   </defs>
 
-  <!-- Smooth Dark Slate Squircle Background -->
-  <rect width="512" height="512" rx="128" fill="#0f172a"/>
+  <!-- (Background rect removed for a fully transparent canvas) -->
   
   <!-- Jumbo Tilted Football -->
   <g transform="translate(256, 310) rotate(-28)">
@@ -38,9 +37,9 @@
            A 50 50 0 0 1 90 170 Z" 
         fill="#64748b"/>
 
-  <!-- Giant Diagonal Lightning Bolt (Lowered & Tucked Into Cloud) -->
+  <!-- Giant Diagonal Lightning Bolt -->
   
-  <!-- LAYER 1: Thick Dark Outline Underneath -->
+  <!-- LAYER 1: Thick Dark Outline Underneath (Maintains contrast on light browser tabs) -->
   <path d="M 280 115 
            L 210 230 
            L 270 230 
@@ -52,7 +51,7 @@
         stroke-width="18" 
         stroke-linejoin="round"/>
 
-  <!-- LAYER 2: Pure Yellow Fill On Top (Guarantees yellow tips) -->
+  <!-- LAYER 2: Pure Yellow Fill On Top -->
   <path d="M 280 115 
            L 210 230 
            L 270 230 
