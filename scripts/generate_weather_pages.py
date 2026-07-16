@@ -35,7 +35,7 @@ def main():
     <meta name="description" content="View the live weather forecast for the {team_name} game at {stadium_name}. Track real-time rain delay risks, stadium wind direction, hourly temperatures, and betting odds.">
     <meta name="keywords" content="{team_name} weather, {stadium_name} wind direction, {stadium_name} rain delay, {team_name} game weather today, fantasy football weather, NFL weather">
     <link rel="canonical" href="https://weathernfl.com/team_pages/{team_slug}/" />
-    
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <!-- OpenGraph / Social Meta -->
     <meta property="og:title" content="{team_name} Game Weather at {stadium_name} - Weather NFL">
     <meta property="og:description" content="Track stadium wind, hourly rain risks, and weather impact analytics for the {team_name} game at {stadium_name}.">
