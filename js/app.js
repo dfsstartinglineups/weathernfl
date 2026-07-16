@@ -75,13 +75,37 @@ function updateUI() {
     
     let filteredGames = Object.entries(allGamesData);
 
+    // Apply filters based on which page we are on
     if (mainContainer) {
         filteredGames = filteredGames.filter(([id, g]) => g.week_label === currentSelectedWeek);
-        renderGames(filteredGames, mainContainer, false);
     } else if (singleTeamContainer) {
         const targetTeamId = window.TARGET_TEAM_ID;
         filteredGames = filteredGames.filter(([id, g]) => g.home_id === targetTeamId || g.away_id === targetTeamId);
-        filteredGames.sort((a, b) => (a[1].week_order || 0) - (b[1].week_order || 0));
+    }
+
+    // --- NEW SMART SORTING LOGIC ---
+    filteredGames.sort((a, b) => {
+        const gameA = a[1];
+        const gameB = b[1];
+
+        // 1. Push completed games ("post") to the absolute bottom
+        const isAFinal = gameA.status === 'post';
+        const isBFinal = gameB.status === 'post';
+
+        if (isAFinal && !isBFinal) return 1;
+        if (!isAFinal && isBFinal) return -1;
+
+        // 2. Sort all remaining games chronologically (earliest first)
+        const timeA = new Date(gameA.game_time).getTime();
+        const timeB = new Date(gameB.game_time).getTime();
+        
+        return timeA - timeB;
+    });
+
+    // Render to the correct container
+    if (mainContainer) {
+        renderGames(filteredGames, mainContainer, false);
+    } else if (singleTeamContainer) {
         renderGames(filteredGames, singleTeamContainer, true);
     }
 }
@@ -396,6 +420,7 @@ function renderGames(gamesArray, container, isSingleTeam) {
         
         let expandTutorialHtml = '';
         if (!window.HAS_SHOWN_TUTORIAL) {
+            // Positioned absolutely right above the Expand Cards button so it flawlessly points to it
             expandTutorialHtml = `
                 <div class="tutorial-tooltip text-primary fw-bold position-absolute w-100 text-center" style="bottom: 100%; left: 0; padding-bottom: 4px; font-size: 0.75rem; animation: tutorialBounce 1.5s infinite; white-space: nowrap; pointer-events: none;">
                     👇 Click to expand
