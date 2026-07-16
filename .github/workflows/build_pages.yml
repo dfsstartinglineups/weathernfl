@@ -1,6 +1,9 @@
 name: Build SEO Team Pages
 
 on:
+  schedule:
+    # Runs automatically at 9:00 AM UTC (4:00 AM EST / 5:00 AM EDT) every single day
+    - cron: '0 9 * * *'
   push:
     paths:
       - 'scripts/generate_weather_pages.py'
