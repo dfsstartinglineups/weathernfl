@@ -21,10 +21,20 @@ except FileNotFoundError:
     print("⚠️ data/venues.json not found! Proceeding with API fallbacks.")
 
 def fetch_open_meteo_hourly(lat, lon, game_iso_time):
-    """
-    Fetches hourly weather forecasts using strict GMT timezone (WeatherMLB Style)
-    to perfectly align the forecast window with the ESPN UTC kickoff time.
-    """
+    # 1. Parse game time to strict UTC
+    utc_time = datetime.datetime.fromisoformat(game_iso_time.replace('Z', '+00:00'))
+    
+    # 2. Calculate the exact dates needed for the API call
+    game_date_str = utc_time.strftime('%Y-%m-%d')
+    next_day = (utc_time + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+    
+    # 3. Prevent crashing on games too far in the future
+    today_utc = datetime.datetime.now(datetime.timezone.utc).date()
+    days_diff = (utc_time.date() - today_utc).days
+
+    if days_diff > 14:
+        return {"status": "too_early", "temp": "--", "windSpeed": 0, "precip": 0, "hourly": []}
+
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
         "latitude": lat,
@@ -34,7 +44,9 @@ def fetch_open_meteo_hourly(lat, lon, game_iso_time):
         "temperature_unit": "fahrenheit",
         "wind_speed_unit": "mph",
         "precipitation_unit": "inch",
-        "timezone": "GMT" # <-- CRUCIAL FIX: Forces all time arrays to UTC
+        "timezone": "GMT",
+        "start_date": game_date_str,
+        "end_date": next_day
     }
     
     try:
@@ -46,28 +58,22 @@ def fetch_open_meteo_hourly(lat, lon, game_iso_time):
         current = data.get('current', {})
         time_array = data.get('hourly', {}).get('time', [])
         
-        # 1. Parse game time to strict UTC
-        # ESPN sends e.g. "2026-09-10T20:20Z"
-        utc_time = datetime.datetime.fromisoformat(game_iso_time.replace('Z', '+00:00'))
-        
-        # 2. Strip minutes to match Open-Meteo's hourly GMT array format
+        # Strip minutes to match Open-Meteo's hourly GMT array format
         target_time_str = utc_time.strftime('%Y-%m-%dT%H:00')
         
-        # 3. Find the exact matching index in the forecast
+        # Find the exact matching index in the forecast
         try:
             start_idx = time_array.index(target_time_str)
         except ValueError:
-            start_idx = 0
+            start_idx = 1
 
-        # 4. Slice a 5-hour window: 1 hr before kickoff to 3 hrs after
+        # Slice exactly a 5-hour window: 1 hr before kickoff to 3 hrs after
         actual_start = max(0, start_idx - 1)
         actual_end = min(len(time_array), start_idx + 4)
 
         hourly_slice = []
         for i in range(actual_start, actual_end):
             code = data['hourly'].get("weather_code", [0])[i]
-            
-            # WMO Weather Interpretation Codes
             is_thunder = code in [95, 96, 99]
             is_snow = code in [71, 73, 75, 77, 85, 86]
             
@@ -83,6 +89,7 @@ def fetch_open_meteo_hourly(lat, lon, game_iso_time):
             })
             
         return {
+            "status": "ok",
             "temp": int(current.get('temperature_2m', 72)),
             "windSpeed": int(current.get('wind_speed_10m', 0)),
             "precip": round(float(current.get('precipitation', 0.0)), 2),
@@ -155,10 +162,8 @@ def main():
             comp = event['competitions'][0]
             game_time = event['date']
             
-            # --- VENUE ID PIVOT LOGIC ---
             espn_venue = comp.get('venue', {})
             venue_id = str(espn_venue.get('id', ''))
-            
             stadium_info = venues_dict.get(venue_id)
             
             if not stadium_info:
@@ -174,7 +179,7 @@ def main():
                     "lon": 0.0
                 }
             
-            weather_payload = {"temp": 72, "windSpeed": 0, "precip": 0, "hourly": []} 
+            weather_payload = {"status": "ok", "temp": 72, "windSpeed": 0, "precip": 0, "hourly": []} 
             
             if stadium_info['roof'] not in ["Dome", "Retractable"] and stadium_info['lat'] != 0.0:
                 api_weather = fetch_open_meteo_hourly(stadium_info['lat'], stadium_info['lon'], game_time)
@@ -182,6 +187,7 @@ def main():
                     weather_payload = api_weather
             elif stadium_info['roof'] in ["Dome", "Retractable"]:
                 weather_payload = {
+                    "status": "ok",
                     "temp": 70,
                     "windSpeed": 0,
                     "precip": 0,
