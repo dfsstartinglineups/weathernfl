@@ -12,7 +12,7 @@ if not firebase_admin._apps:
         cred = credentials.Certificate(json.loads(raw_key))
         firebase_admin.initialize_app(cred, {'databaseURL': 'https://nbastartingfive-8b420-default-rtdb.firebaseio.com/'})
 
-# 2. Load Venues Data (Replacing the old stadiums.json)
+# 2. Load Venues Data
 venues_dict = {}
 try:
     with open('data/venues.json', 'r') as f:
@@ -20,13 +20,79 @@ try:
 except FileNotFoundError:
     print("⚠️ data/venues.json not found! Proceeding with API fallbacks.")
 
-def fetch_open_meteo(lat, lon):
-    url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,wind_speed_10m,precipitation&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch"
+def fetch_open_meteo_hourly(lat, lon, game_iso_time):
+    """
+    Fetches hourly weather forecasts and returns current kickoff weather 
+    plus a structured 4-hour window starting at kickoff.
+    """
+    url = "https://api.open-meteo.com/v1/forecast"
+    params = {
+        "latitude": lat,
+        "longitude": lon,
+        "current": "temperature_2m,wind_speed_10m,precipitation",
+        "hourly": "temperature_2m,precipitation_probability,weather_code",
+        "temperature_unit": "fahrenheit",
+        "wind_speed_unit": "mph",
+        "precipitation_unit": "inch",
+        "timezone": "auto"
+    }
+    
     try:
-        data = requests.get(url, timeout=10).json()
-        return data.get('current', {})
-    except:
-        return {}
+        response = requests.get(url, params=params, timeout=10)
+        if response.status_code != 200:
+            return None
+        
+        data = response.json()
+        current = data.get('current', {})
+        hourly = data.get('hourly', {})
+        times = hourly.get('time', [])
+        
+        # Parse game time
+        # ESPN sends e.g. "2026-09-10T20:20Z"
+        game_dt = datetime.datetime.fromisoformat(game_iso_time.replace("Z", "+00:00"))
+        
+        # Find the index closest to kickoff
+        start_idx = 0
+        min_diff = float('inf')
+        for idx, t_str in enumerate(times):
+            t_dt = datetime.datetime.fromisoformat(t_str).replace(tzinfo=datetime.timezone.utc)
+            diff = abs((t_dt - game_dt).total_seconds())
+            if diff < min_diff:
+                min_diff = diff
+                start_idx = idx
+
+        # Format a 4-hour forecast window for the app's scrollable hourly bar
+        formatted_hourly = []
+        for i in range(start_idx, min(start_idx + 4, len(times))):
+            t_str = times[i]
+            code = hourly.get("weather_code", [0])[i]
+            
+            # WMO Weather Interpretation Codes
+            is_thunder = code in [95, 96, 99]
+            is_snow = code in [71, 73, 75, 77, 85, 86]
+            
+            # Open-Meteo returns times as "YYYY-MM-DDTHH:MM" local. Convert to UTC ISO string
+            local_dt = datetime.datetime.fromisoformat(t_str)
+            utc_iso = local_dt.replace(tzinfo=datetime.timezone.utc).isoformat() + "Z"
+
+            formatted_hourly.append({
+                "timestamp": utc_iso,
+                "temp": int(hourly.get("temperature_2m", [72])[i]),
+                "precipChance": int(hourly.get("precipitation_probability", [0])[i]),
+                "isThunderstorm": is_thunder,
+                "isSnow": is_snow
+            })
+            
+        return {
+            "temp": int(current.get('temperature_2m', 72)),
+            "windSpeed": int(current.get('wind_speed_10m', 0)),
+            "precip": round(float(current.get('precipitation', 0.0)), 2),
+            "hourly": formatted_hourly
+        }
+        
+    except Exception as e:
+        print(f"   ⚠️ Weather Fetch Error: {e}")
+        return None
 
 def get_week_label(stype, wk):
     if stype == 1: return f"Preseason Week {wk}"
@@ -99,6 +165,7 @@ def main():
         for event in events:
             game_id = event['id']
             comp = event['competitions'][0]
+            game_time = event['date']
             
             # --- VENUE ID PIVOT LOGIC ---
             espn_venue = comp.get('venue', {})
@@ -122,11 +189,21 @@ def main():
                 }
             
             # Fetch Weather
-            weather_data = {"temperature_2m": 72, "wind_speed_10m": 0, "precipitation": 0} 
+            weather_payload = {"temp": 72, "windSpeed": 0, "precip": 0, "hourly": []} 
             
-            # Fetch weather if it's an outdoor stadium and we have valid coordinates
-            if stadium_info['roof'] not in ["Dome", "Retractable"] and stadium_info['lat'] != 0.0:
-                weather_data = fetch_open_meteo(stadium_info['lat'], stadium_info['lon'])
+            # Fetch weather if it's an outdoor/retractable stadium and we have coordinates
+            if stadium_info['roof'] not in ["Dome"] and stadium_info['lat'] != 0.0:
+                api_weather = fetch_open_meteo_hourly(stadium_info['lat'], stadium_info['lon'], game_time)
+                if api_weather:
+                    weather_payload = api_weather
+            else:
+                # Controlled indoor climate template
+                weather_payload = {
+                    "temp": 70,
+                    "windSpeed": 0,
+                    "precip": 0,
+                    "hourly": []
+                }
                 
             # Parse Teams
             home_competitor = next((c for c in comp['competitors'] if c['homeAway'] == 'home'), None)
@@ -138,7 +215,7 @@ def main():
             live_state[game_id] = {
                 "game_info": event['name'],
                 "status": event['status']['type']['state'], 
-                "game_time": event['date'], 
+                "game_time": game_time, 
                 "clock": event['status']['type'].get('shortDetail', ''), 
                 "week_label": fetch["label"],
                 "week_order": fetch["order"],
@@ -147,11 +224,7 @@ def main():
                 "home_team": home_competitor['team']['displayName'] if home_competitor else "TBD",
                 "away_team": away_competitor['team']['displayName'] if away_competitor else "TBD",
                 "stadium": stadium_info,
-                "weather": {
-                    "temp": weather_data.get('temperature_2m', 72),
-                    "windSpeed": weather_data.get('wind_speed_10m', 0),
-                    "precip": weather_data.get('precipitation', 0)
-                }
+                "weather": weather_payload
             }
     
     # 4. Push directly to Firebase
