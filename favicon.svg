@@ -1,38 +1,145 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512"><metadata><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"><rdf:Description><dc:creator>RealFaviconGenerator</dc:creator><dc:source>https://realfavicongenerator.net</dc:source></rdf:Description></rdf:RDF></metadata><defs>
-    <!-- Expanded mathematical boundary for the jumbo football -->
+    <!-- Realistic Football Leather Gradient -->
+    <radialGradient id="leather-grad" cx="60%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#a1522f"></stop>
+      <stop offset="40%" stop-color="#843d1c"></stop>
+      <stop offset="85%" stop-color="#54210b"></stop>
+      <stop offset="100%" stop-color="#2e1003"></stop>
+    </radialGradient>
+
+    <!-- White Stripe Realistic Highlight & Shadow -->
+    <linearGradient id="stripe-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#cbd5e1"></stop>
+      <stop offset="30%" stop-color="#f8fafc"></stop>
+      <stop offset="70%" stop-color="#e2e8f0"></stop>
+      <stop offset="100%" stop-color="#94a3b8"></stop>
+    </linearGradient>
+
+    <!-- Laces Gradient (3D look) -->
+    <linearGradient id="lace-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"></stop>
+      <stop offset="80%" stop-color="#e2e8f0"></stop>
+      <stop offset="100%" stop-color="#94a3b8"></stop>
+    </linearGradient>
+
+    <!-- Soft Drop Shadow for Depth -->
+    <filter id="drop-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="6" dy="10" stdDeviation="8" flood-color="#020617" flood-opacity="0.8"></feDropShadow>
+    </filter>
+
+    <!-- Lightning Glow Effect (Bloom) -->
+    <filter id="lightning-glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="coloredBlur"></feGaussianBlur>
+      <feMerge>
+        <feMergeNode in="coloredBlur"></feMergeNode>
+        <feMergeNode in="coloredBlur"></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+      </feMerge>
+    </filter>
+
+    <!-- Dark Storm Cloud Gradients -->
+    <linearGradient id="cloud-grad-back" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#475569"></stop>
+      <stop offset="100%" stop-color="#1e293b"></stop>
+    </linearGradient>
+
+    <linearGradient id="cloud-grad-front" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#64748b"></stop>
+      <stop offset="60%" stop-color="#334155"></stop>
+      <stop offset="100%" stop-color="#0f172a"></stop>
+    </linearGradient>
+
+    <!-- Clipping path for football stripes -->
     <clipPath id="football-boundary">
-      <path d="M -190 0 C -110 -130, 110 -130, 190 0 C 110 130, -110 130, -190 0 Z"></path>
+      <path d="M -200 0 C -115 -140, 115 -140, 200 0 C 115 140, -115 140, -200 0 Z"></path>
     </clipPath>
-  </defs><g transform="translate(256, 310) rotate(-28)">
-    <!-- Football Leather Body -->
-    <path d="M -190 0 C -110 -130, 110 -130, 190 0 C 110 130, -110 130, -190 0 Z" fill="#b05d38"></path>
+  </defs><g transform="translate(256, 240) scale(1.1)">
     
-    <!-- Clipped Jumbo White Stripes -->
-    <g clip-path="url(#football-boundary)">
-      <path d="M -145 -130 C -125 -60, -125 60, -145 130" fill="none" stroke="#ffffff" stroke-width="26" stroke-linecap="round"></path>
-      <path d="M 145 -130 C 125 -60, 125 60, 145 130" fill="none" stroke="#ffffff" stroke-width="26" stroke-linecap="round"></path>
+    <!-- 1. Jumbo Realistic Football with Drop Shadow -->
+    <g transform="translate(0, 60) rotate(-25)" filter="url(#drop-shadow)">
+      <!-- Football Leather Body -->
+      <path d="M -200 0 C -115 -140, 115 -140, 200 0 C 115 140, -115 140, -200 0 Z" fill="url(#leather-grad)"></path>
+      
+      <!-- Pebbled Texture Overlay (Subtle) -->
+      <path d="M -200 0 C -115 -140, 115 -140, 200 0 C 115 140, -115 140, -200 0 Z" fill="#ffffff" opacity="0.04" style="mix-blend-mode: overlay;"></path>
+      
+      <!-- Clipped White Stripes with Shading -->
+      <g clip-path="url(#football-boundary)">
+        <path d="M -155 -140 C -135 -60, -135 60, -155 140" fill="none" stroke="url(#stripe-grad)" stroke-width="26" opacity="0.95"></path>
+        <path d="M 155 -140 C 135 -60, 135 60, 155 140" fill="none" stroke="url(#stripe-grad)" stroke-width="26" opacity="0.95"></path>
+      </g>
+      
+      <!-- 3D Lacing Detail -->
+      <g>
+        <!-- Shadow Layer under Laces -->
+        <line x1="-70" y1="4" x2="70" y2="4" stroke="#1e0a02" stroke-width="18" stroke-linecap="round" opacity="0.6"></line>
+        <!-- Main Spine -->
+        <line x1="-70" y1="0" x2="70" y2="0" stroke="url(#lace-grad)" stroke-width="18" stroke-linecap="round"></line>
+        
+        <!-- Cross Laces -->
+        <line x1="-42" y1="-22" x2="-42" y2="26" stroke="#1e0a02" stroke-width="14" stroke-linecap="round" opacity="0.5"></line>
+        <line x1="-42" y1="-24" x2="-42" y2="24" stroke="url(#lace-grad)" stroke-width="14" stroke-linecap="round"></line>
+
+        <line x1="-14" y1="-22" x2="-14" y2="26" stroke="#1e0a02" stroke-width="14" stroke-linecap="round" opacity="0.5"></line>
+        <line x1="-14" y1="-24" x2="-14" y2="24" stroke="url(#lace-grad)" stroke-width="14" stroke-linecap="round"></line>
+
+        <line x1="14" y1="-22" x2="14" y2="26" stroke="#1e0a02" stroke-width="14" stroke-linecap="round" opacity="0.5"></line>
+        <line x1="14" y1="-24" x2="14" y2="24" stroke="url(#lace-grad)" stroke-width="14" stroke-linecap="round"></line>
+
+        <line x1="42" y1="-22" x2="42" y2="26" stroke="#1e0a02" stroke-width="14" stroke-linecap="round" opacity="0.5"></line>
+        <line x1="42" y1="-24" x2="42" y2="24" stroke="url(#lace-grad)" stroke-width="14" stroke-linecap="round"></line>
+      </g>
     </g>
-    
-    <!-- Bold Lacing Detail -->
-    <line x1="-70" y1="0" x2="70" y2="0" stroke="#ffffff" stroke-width="18" stroke-linecap="round"></line>
-    <line x1="-42" y1="-24" x2="-42" y2="24" stroke="#ffffff" stroke-width="16" stroke-linecap="round"></line>
-    <line x1="-14" y1="-24" x2="-14" y2="24" stroke="#ffffff" stroke-width="16" stroke-linecap="round"></line>
-    <line x1="14" y1="-24" x2="14" y2="24" stroke="#ffffff" stroke-width="16" stroke-linecap="round"></line>
-    <line x1="42" y1="-24" x2="42" y2="24" stroke="#ffffff" stroke-width="16" stroke-linecap="round"></line>
-  </g><path d="M 90 170 
-           A 65 65 0 0 1 180 80 
-           A 100 100 0 0 1 350 80 
-           A 65 65 0 0 1 410 170 
-           A 50 50 0 0 1 380 240 
-           L 120 240 
-           A 50 50 0 0 1 90 170 Z" fill="#64748b"></path><path d="M 280 115 
-           L 210 230 
-           L 270 230 
-           L 140 450 
-           L 310 210 
-           L 245 210 Z" fill="#0f172a" stroke="#0f172a" stroke-width="18" stroke-linejoin="round"></path><path d="M 280 115 
-           L 210 230 
-           L 270 230 
-           L 140 450 
-           L 310 210 
-           L 245 210 Z" fill="#facc15"></path></svg>
+
+    <!-- 2. Volumetric Multilayered Storm Cloud -->
+    <!-- Back darker cloud layer -->
+    <path d="M -175 -60 
+             A 75 75 0 0 1 -65 -150 
+             A 110 110 0 0 1 115 -150 
+             A 75 75 0 0 1 175 -60 
+             A 60 60 0 0 1 135 20 
+             L -135 20 
+             A 60 60 0 0 1 -175 -60 Z" fill="url(#cloud-grad-back)" filter="url(#drop-shadow)"></path>
+          
+    <!-- Front highlighted cloud layer -->
+    <path d="M -155 -40 
+             A 65 65 0 0 1 -60 -120 
+             A 90 90 0 0 1 90 -120 
+             A 65 65 0 0 1 145 -40 
+             A 50 50 0 0 1 115 30 
+             L -115 30 
+             A 50 50 0 0 1 -155 -40 Z" fill="url(#cloud-grad-front)"></path>
+
+    <!-- 3. Dynamic Lightning Bolt with Realistic Electric Bloom -->
+    <!-- LAYER 1: Deep Outer Shadow Mask -->
+    <path d="M 24 -115 
+             L -46 0 
+             L 14 0 
+             L -116 220 
+             L 54 -20 
+             L -11 -20 Z" fill="#090d16" stroke="#090d16" stroke-width="20" stroke-linejoin="round" opacity="0.9"></path>
+
+    <!-- LAYER 2: Wide Neon Yellow Glow (Bloom) -->
+    <path d="M 24 -115 
+             L -46 0 
+             L 14 0 
+             L -116 220 
+             L 54 -20 
+             L -11 -20 Z" fill="#eab308" stroke="#facc15" stroke-width="12" stroke-linejoin="round" filter="url(#lightning-glow)" opacity="0.8"></path>
+
+    <!-- LAYER 3: Hot Yellow Core -->
+    <path d="M 24 -115 
+             L -46 0 
+             L 14 0 
+             L -116 220 
+             L 54 -20 
+             L -11 -20 Z" fill="#facc15" stroke="#fef08a" stroke-width="4" stroke-linejoin="round"></path>
+
+    <!-- LAYER 4: Blazing White Hot Center -->
+    <path d="M 24 -112 
+             L -44 -2 
+             L 12 -2 
+             L -112 214 
+             L 50 -18 
+             L -9 -18 Z" fill="#ffffff"></path>
+  </g></svg>
