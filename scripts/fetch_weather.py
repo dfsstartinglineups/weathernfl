@@ -12,12 +12,13 @@ if not firebase_admin._apps:
         cred = credentials.Certificate(json.loads(raw_key))
         firebase_admin.initialize_app(cred, {'databaseURL': 'https://nbastartingfive-8b420-default-rtdb.firebaseio.com/'})
 
-# 2. Load Stadium Data
-stadiums_dict = {}
-with open('data/stadiums.json', 'r') as f:
-    stadiums = json.load(f)
-    for s in stadiums:
-        stadiums_dict[s['id']] = s
+# 2. Load Venues Data (Replacing the old stadiums.json)
+venues_dict = {}
+try:
+    with open('data/venues.json', 'r') as f:
+        venues_dict = json.load(f)
+except FileNotFoundError:
+    print("⚠️ data/venues.json not found! Proceeding with API fallbacks.")
 
 def fetch_open_meteo(lat, lon):
     url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,wind_speed_10m,precipitation&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch"
@@ -98,18 +99,42 @@ def main():
         for event in events:
             game_id = event['id']
             comp = event['competitions'][0]
+            
+            # --- VENUE ID PIVOT LOGIC ---
+            espn_venue = comp.get('venue', {})
+            venue_id = str(espn_venue.get('id', ''))
+            
+            # Look up the venue by its ID in our new venues database
+            stadium_info = venues_dict.get(venue_id)
+            
+            # Fallback if ESPN uses a new/unknown venue ID
+            if not stadium_info:
+                print(f"⚠️ Unknown Venue ID {venue_id} detected for game {game_id}. Using API fallback data.")
+                is_indoor = espn_venue.get('indoor', False)
+                stadium_info = {
+                    "name": espn_venue.get('fullName', 'TBD Location'),
+                    "city": espn_venue.get('address', {}).get('city', ''),
+                    "state": espn_venue.get('address', {}).get('state', ''),
+                    "roof": "Dome" if is_indoor else "Open",
+                    "surface": "TBD",
+                    "lat": 0.0,
+                    "lon": 0.0
+                }
+            
+            # Fetch Weather
+            weather_data = {"temperature_2m": 72, "wind_speed_10m": 0, "precipitation": 0} 
+            
+            # Fetch weather if it's an outdoor stadium and we have valid coordinates
+            if stadium_info['roof'] not in ["Dome", "Retractable"] and stadium_info['lat'] != 0.0:
+                weather_data = fetch_open_meteo(stadium_info['lat'], stadium_info['lon'])
+                
+            # Parse Teams
             home_competitor = next((c for c in comp['competitors'] if c['homeAway'] == 'home'), None)
             away_competitor = next((c for c in comp['competitors'] if c['homeAway'] == 'away'), None)
             
             home_abbr = home_competitor['team']['abbreviation'] if home_competitor else "TBD"
+            away_abbr = away_competitor['team']['abbreviation'] if away_competitor else "TBD"
             
-            stadium_info = stadiums_dict.get(home_abbr, None)
-            weather_data = {"temperature_2m": 72, "wind_speed_10m": 0, "precipitation": 0} 
-            
-            # Fetch weather if it's an outdoor stadium
-            if stadium_info and stadium_info['roof'] != "Dome":
-                weather_data = fetch_open_meteo(stadium_info['lat'], stadium_info['lon'])
-                
             live_state[game_id] = {
                 "game_info": event['name'],
                 "status": event['status']['type']['state'], 
@@ -118,7 +143,7 @@ def main():
                 "week_label": fetch["label"],
                 "week_order": fetch["order"],
                 "home_id": home_abbr,
-                "away_id": away_competitor['team']['abbreviation'] if away_competitor else "TBD",
+                "away_id": away_abbr,
                 "home_team": home_competitor['team']['displayName'] if home_competitor else "TBD",
                 "away_team": away_competitor['team']['displayName'] if away_competitor else "TBD",
                 "stadium": stadium_info,
