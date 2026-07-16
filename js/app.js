@@ -242,13 +242,8 @@ function createGameCard(gameId, game, isSingleTeam) {
     let windArrow = "💨";
     let windCss = "bg-secondary text-white";
     
-    // Dynamic naming handling neutral location data from backend updates
+    // Default to the stadium name directly
     const stadiumName = game.stadium ? game.stadium.name : "TBD Location";
-    const stadiumLocation = game.stadium && game.stadium.city && game.stadium.state 
-        ? `${game.stadium.city}, ${game.stadium.state}` 
-        : "";
-    const displayStadiumInfo = stadiumLocation ? `${stadiumName} (${stadiumLocation})` : stadiumName;
-
     const stadiumLat = game.stadium ? game.stadium.lat : 39.0;
     const stadiumLon = game.stadium ? game.stadium.lon : -95.0;
     
@@ -313,7 +308,7 @@ function createGameCard(gameId, game, isSingleTeam) {
                         <img src="${homeLogo}" style="width: 16px; height: 16px; object-fit: contain;" onerror="this.style.display='none'">
                         <span class="fw-bold text-dark lh-1" style="font-size: 0.75rem;">${homeShortName}</span>
                     </div>
-                    <div class="text-truncate text-end fw-bold flex-grow-1 ms-1" style="font-size: 0.7rem; opacity: 0.75;">${displayStadiumInfo}</div>
+                    <div class="text-truncate text-end fw-bold flex-grow-1 ms-1" style="font-size: 0.7rem; opacity: 0.75;">${stadiumName}</div>
                 </div>
             </div>
 
@@ -321,7 +316,7 @@ function createGameCard(gameId, game, isSingleTeam) {
                 <div class="card-body px-2 pt-2 pb-2"> 
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="badge ${badgeStyle}">${badgeText}</span>
-                        <span class="stadium-name text-truncate text-end flex-grow-1 ms-2" style="font-size: 0.8rem; font-weight: 600;">${displayStadiumInfo}</span>
+                        <span class="stadium-name text-truncate text-end flex-grow-1 ms-2" style="font-size: 0.8rem; font-weight: 600;">${stadiumName}</span>
                     </div>
                     
                     <div class="d-flex justify-content-between align-items-center px-1 mb-1">
