@@ -2,7 +2,7 @@
 // STATE MANAGEMENT & FIREBASE (MLB STYLE)
 // ==========================================
 let savedScoreboardState = localStorage.getItem('nflScoreboardMode');
-let globalScoreboardMode = savedScoreboardState !== null ? savedScoreboardState === 'true' : false; 
+let globalScoreboardMode = savedScoreboardState !== null ? savedScoreboardState === 'true' : true; 
 
 window.HAS_SHOWN_TUTORIAL = false;
 let allGamesData = {};
@@ -248,7 +248,6 @@ function createGameCard(gameId, game, isSingleTeam) {
 
     let weatherSectionHtml = '';
     
-    // Check if the forecast is too far out
     if (isTooEarly) {
         weatherSectionHtml = `
             <div class="text-center p-3 mt-2 border-top">
@@ -391,29 +390,37 @@ function renderGames(gamesArray, container, isSingleTeam) {
     }
     
     if (!isSingleTeam && gamesArray.length > 0) {
+        
         let expandTutorialHtml = '';
         if (!window.HAS_SHOWN_TUTORIAL) {
-            expandTutorialHtml = `<div class="tutorial-tooltip text-primary fw-bold mb-1" style="font-size: 0.75rem; animation: tutorialBounce 1.5s infinite;">👇 Click to expand all cards</div>`;
+            // Positioned absolutely right above the Expand Cards button so it flawlessly points to it
+            expandTutorialHtml = `
+                <div class="tutorial-tooltip text-primary fw-bold position-absolute w-100 text-center" style="bottom: 100%; left: 0; padding-bottom: 4px; font-size: 0.75rem; animation: tutorialBounce 1.5s infinite; white-space: nowrap; pointer-events: none;">
+                    👇 Click to expand
+                </div>
+            `;
         }
         
         let weekBtnText = currentSelectedWeek === availableWeeks[0] ? 'Next Week ➡️' : '⬅️ Last Week';
         let weekBtnDisplay = availableWeeks.length > 1 ? 'inline-block' : 'none'; 
 
         const controlRow = document.createElement('div');
-        controlRow.className = 'col-12 mb-3 mt-1 position-relative d-flex flex-column align-items-center';
+        controlRow.className = 'col-12 mb-3 mt-1 d-flex flex-column align-items-center';
         controlRow.innerHTML = `
-            <div class="fw-bold text-secondary mb-2" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">
+            <div class="fw-bold text-secondary mb-3" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">
                 📅 ${currentSelectedWeek}
             </div>
-            ${expandTutorialHtml}
-            <div class="d-flex justify-content-center gap-2">
-                <button class="btn btn-sm shadow-sm fw-bold px-3 py-1 border border-primary text-primary" style="background-color: #f8f9fa; border-radius: 20px; display: ${weekBtnDisplay};" onclick="window.toggleWeek()">
+            <div class="d-flex justify-content-center gap-2 align-items-end">
+                <button class="btn btn-sm shadow-sm fw-bold px-3 py-1 border border-primary text-primary" style="background-color: #f8f9fa; border-radius: 20px; height: fit-content; display: ${weekBtnDisplay};" onclick="window.toggleWeek()">
                     ${weekBtnText}
                 </button>
-                <button class="btn btn-sm shadow-sm fw-bold px-4 py-1 border border-secondary" style="background-color: #fff; color: #495057; border-radius: 20px;" onclick="window.toggleAllWeatherCards()">
-                    <span id="expand-toggle-icon">${globalScoreboardMode ? '▼' : '▲'}</span> 
-                    <span id="expand-toggle-text">${globalScoreboardMode ? 'Expand All Cards' : 'Collapse All Cards'}</span>
-                </button>
+                <div class="position-relative d-inline-block">
+                    ${expandTutorialHtml}
+                    <button class="btn btn-sm shadow-sm fw-bold px-4 py-1 border border-secondary" style="background-color: #fff; color: #495057; border-radius: 20px;" onclick="window.toggleAllWeatherCards()">
+                        <span id="expand-toggle-icon">${globalScoreboardMode ? '▼' : '▲'}</span> 
+                        <span id="expand-toggle-text">${globalScoreboardMode ? 'Expand All Cards' : 'Collapse All Cards'}</span>
+                    </button>
+                </div>
             </div>
         `;
         container.appendChild(controlRow);
