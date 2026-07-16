@@ -46,13 +46,23 @@ def get_live_schedule():
 def find_next_game(team_id, schedule):
     """
     Searches the live Firebase schedule to find the team's next game.
-    Prioritizes 'Week 1' (or Order 1) over next week.
+    Handles 'WAS' / 'WSH' normalization for Washington.
     """
     team_id_upper = team_id.upper()
+    if team_id_upper == "WSH":
+        team_id_upper = "WAS"
+        
     games = []
     
     for game_id, g in schedule.items():
-        if g.get('home_id') == team_id_upper or g.get('away_id') == team_id_upper:
+        home_id = g.get('home_id', '').upper()
+        away_id = g.get('away_id', '').upper()
+        
+        # Normalize incoming Firebase IDs to match stadiums.json WSH
+        if home_id == "WAS": home_id = "WSH"
+        if away_id == "WAS": away_id = "WSH"
+        
+        if home_id == team_id.upper() or away_id == team_id.upper():
             games.append(g)
             
     if not games:
@@ -76,16 +86,16 @@ def main():
     # Grab live schedule from Firebase
     live_schedule = get_live_schedule()
 
-    # Create the build directory if it doesn't exist
-    os.makedirs('build', exist_ok=True)
+    # Create the root team_pages directory if it doesn't exist
+    os.makedirs('team_pages', exist_ok=True)
 
-    # 1. Generate the dynamic links dropdown menu options
+    # 1. Generate the dropdown links relative to a nested folder (e.g., ../buffalo-bills/index.html)
     links_html = ""
     for s in stadiums_list:
         team_slug = slugify(s['team'])
-        links_html += f'<li><a class="dropdown-item" href="{team_slug}.html">{s["team"]}</a></li>\n'
+        links_html += f'<li><a class="dropdown-item" href="../{team_slug}/index.html">{s["team"]}</a></li>\n'
 
-    # 2. Loop through each team and generate its static HTML page
+    # 2. Loop through each team and generate its static index.html inside team_pages/team-slug/
     for s in stadiums_list:
         team_name = s['team']
         team_id = s['id']
@@ -95,8 +105,8 @@ def main():
         game = find_next_game(team_id, live_schedule)
         
         if game:
-            opponent_name = game['away_team'] if game['home_id'] == team_id.upper() else game['home_team']
-            is_home = game['home_id'] == team_id.upper()
+            opponent_name = game['away_team'] if game['home_id'] == team_id.upper() or (game['home_id'] == 'WAS' and team_id.upper() == 'WSH') else game['home_team']
+            is_home = game['home_id'] == team_id.upper() or (game['home_id'] == 'WAS' and team_id.upper() == 'WSH')
             stadium_name = game.get('stadium', {}).get('name', s['name'])
             
             # Create the dynamic title and description strings
@@ -116,7 +126,7 @@ def main():
             header_title = f"{team_name} Weather Forecast"
             header_subtitle = f"Home Field: {s['name']} (Roof: {s['roof']} | Surface: {s['surface']})"
 
-        # HTML Template
+        # HTML Template (Using relative "../../" paths so assets load correctly inside team_pages/team-name/index.html)
         html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -127,7 +137,7 @@ def main():
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="../../css/style.css">
     
     <!-- Firebase Libraries -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -143,7 +153,7 @@ def main():
     <!-- Navbar / Header -->
     <nav class="navbar navbar-dark bg-dark shadow-sm">
         <div class="container d-flex justify-content-between align-items-center">
-            <a class="navbar-brand fw-bold" href="index.html">🏈 NFL Weather</a>
+            <a class="navbar-brand fw-bold" href="../../index.html">🏈 NFL Weather</a>
             
             <!-- Teams Dropdown Menu -->
             <div class="dropdown">
@@ -191,17 +201,21 @@ def main():
 
     <!-- Bootstrap & Custom Javascript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/app.js"></script>
+    <script src="../../js/app.js"></script>
 </body>
 </html>
 """
 
-        # Write out the static file
-        output_filepath = f"build/{team_slug}.html"
+        # Create the sub-directory specifically for this team (e.g., team_pages/buffalo-bills/)
+        team_dir = os.path.join("team_pages", team_slug)
+        os.makedirs(team_dir, exist_ok=True)
+
+        # Write index.html directly into that folder
+        output_filepath = os.path.join(team_dir, "index.html")
         with open(output_filepath, "w") as out_f:
             out_f.write(html_content)
 
-    print("✅ All SEO pages generated successfully in the /build folder!")
+    print("✅ All SEO pages generated successfully in their nested team_pages/team-name/index.html structures!")
 
 if __name__ == "__main__":
     main()
