@@ -1,275 +1,34 @@
-{
-  "Acrisure Stadium": {
-    "city": "Pittsburgh",
-    "state": "PA",
-    "type": "Open",
-    "lat": 40.4468,
-    "lon": -80.0158
-  },
-  "Allegiant Stadium": {
-    "city": "Las Vegas",
-    "state": "NV",
-    "type": "Dome",
-    "lat": 36.0909,
-    "lon": -115.1833
-  },
-  "Allianz Arena": {
-    "city": "Munich",
-    "state": "Germany",
-    "type": "Open",
-    "lat": 48.2188,
-    "lon": 11.6247
-  },
-  "Arrowhead Stadium": {
-    "city": "Kansas City",
-    "state": "MO",
-    "type": "Open",
-    "lat": 39.0489,
-    "lon": -94.4839
-  },
-  "AT&T Stadium": {
-    "city": "Arlington",
-    "state": "TX",
-    "type": "Retractable",
-    "lat": 32.7473,
-    "lon": -97.0945
-  },
-  "Bank of America Stadium": {
-    "city": "Charlotte",
-    "state": "NC",
-    "type": "Open",
-    "lat": 35.2258,
-    "lon": -80.8528
-  },
-  "Caesars Superdome": {
-    "city": "New Orleans",
-    "state": "LA",
-    "type": "Dome",
-    "lat": 29.9511,
-    "lon": -90.0812
-  },
-  "Cleveland Browns Stadium": {
-    "city": "Cleveland",
-    "state": "OH",
-    "type": "Open",
-    "lat": 41.5061,
-    "lon": -81.6995
-  },
-  "Commanders Field": {
-    "city": "Landover",
-    "state": "MD",
-    "type": "Open",
-    "lat": 38.9076,
-    "lon": -76.8645
-  },
-  "Deutsche Bank Park": {
-    "city": "Frankfurt",
-    "state": "Germany",
-    "type": "Retractable",
-    "lat": 50.0686,
-    "lon": 8.6455
-  },
-  "Empower Field at Mile High": {
-    "city": "Denver",
-    "state": "CO",
-    "type": "Open",
-    "lat": 39.7439,
-    "lon": -105.0201
-  },
-  "Estadio Azteca": {
-    "city": "Mexico City",
-    "state": "Mexico",
-    "type": "Open",
-    "lat": 19.3029,
-    "lon": -99.1505
-  },
-  "EverBank Stadium": {
-    "city": "Jacksonville",
-    "state": "FL",
-    "type": "Open",
-    "lat": 30.3239,
-    "lon": -81.6373
-  },
-  "Ford Field": {
-    "city": "Detroit",
-    "state": "MI",
-    "type": "Dome",
-    "lat": 42.3400,
-    "lon": -83.0456
-  },
-  "Gillette Stadium": {
-    "city": "Foxborough",
-    "state": "MA",
-    "type": "Open",
-    "lat": 42.0909,
-    "lon": -71.2643
-  },
-  "Hard Rock Stadium": {
-    "city": "Miami Gardens",
-    "state": "FL",
-    "type": "Open",
-    "lat": 25.9581,
-    "lon": -80.2389
-  },
-  "Highmark Stadium": {
-    "city": "Orchard Park",
-    "state": "NY",
-    "type": "Open",
-    "lat": 42.7738,
-    "lon": -78.7868
-  },
-  "Lambeau Field": {
-    "city": "Green Bay",
-    "state": "WI",
-    "type": "Open",
-    "lat": 44.5013,
-    "lon": -88.0622
-  },
-  "Levi's Stadium": {
-    "city": "Santa Clara",
-    "state": "CA",
-    "type": "Open",
-    "lat": 37.4033,
-    "lon": -121.9702
-  },
-  "Lincoln Financial Field": {
-    "city": "Philadelphia",
-    "state": "PA",
-    "type": "Open",
-    "lat": 39.9008,
-    "lon": -75.1675
-  },
-  "Lucas Oil Stadium": {
-    "city": "Indianapolis",
-    "state": "IN",
-    "type": "Retractable",
-    "lat": 39.7601,
-    "lon": -86.1639
-  },
-  "Lumen Field": {
-    "city": "Seattle",
-    "state": "WA",
-    "type": "Open",
-    "lat": 47.5952,
-    "lon": -122.3316
-  },
-  "M&T Bank Stadium": {
-    "city": "Baltimore",
-    "state": "MD",
-    "type": "Open",
-    "lat": 39.2780,
-    "lon": -76.6227
-  },
-  "Melbourne Cricket Ground": {
-    "city": "Melbourne",
-    "state": "Australia",
-    "type": "Open",
-    "lat": -37.8199,
-    "lon": 144.9834
-  },
-  "Mercedes-Benz Stadium": {
-    "city": "Atlanta",
-    "state": "GA",
-    "type": "Retractable",
-    "lat": 33.7554,
-    "lon": -84.4010
-  },
-  "MetLife Stadium": {
-    "city": "East Rutherford",
-    "state": "NJ",
-    "type": "Open",
-    "lat": 40.8128,
-    "lon": -74.0742
-  },
-  "Neo Quimica Arena": {
-    "city": "São Paulo",
-    "state": "Brazil",
-    "type": "Open",
-    "lat": -23.5453,
-    "lon": -46.4742
-  },
-  "Nissan Stadium": {
-    "city": "Nashville",
-    "state": "TN",
-    "type": "Open",
-    "lat": 36.1665,
-    "lon": -86.7713
-  },
-  "NRG Stadium": {
-    "city": "Houston",
-    "state": "TX",
-    "type": "Retractable",
-    "lat": 29.6847,
-    "lon": -95.4107
-  },
-  "Paycor Stadium": {
-    "city": "Cincinnati",
-    "state": "OH",
-    "type": "Open",
-    "lat": 39.0955,
-    "lon": -84.5161
-  },
-  "Raymond James Stadium": {
-    "city": "Tampa",
-    "state": "FL",
-    "type": "Open",
-    "lat": 27.9759,
-    "lon": -82.5033
-  },
-  "Santiago Bernabeu": {
-    "city": "Madrid",
-    "state": "Spain",
-    "type": "Retractable",
-    "lat": 40.4530,
-    "lon": -3.6883
-  },
-  "SoFi Stadium": {
-    "city": "Inglewood",
-    "state": "CA",
-    "type": "Dome",
-    "lat": 33.9535,
-    "lon": -118.3390
-  },
-  "Soldier Field": {
-    "city": "Chicago",
-    "state": "IL",
-    "type": "Open",
-    "lat": 41.8623,
-    "lon": -87.6167
-  },
-  "State Farm Stadium": {
-    "city": "Glendale",
-    "state": "AZ",
-    "type": "Retractable",
-    "lat": 33.5276,
-    "lon": -112.2626
-  },
-  "Tom Benson Hall of Fame Stadium": {
-    "city": "Canton",
-    "state": "OH",
-    "type": "Open",
-    "lat": 40.8198,
-    "lon": -81.3983
-  },
-  "Tottenham Hotspur Stadium": {
-    "city": "London",
-    "state": "UK",
-    "type": "Open",
-    "lat": 51.6043,
-    "lon": -0.0662
-  },
-  "U.S. Bank Stadium": {
-    "city": "Minneapolis",
-    "state": "MN",
-    "type": "Dome",
-    "lat": 44.9735,
-    "lon": -93.2575
-  },
-  "Wembley Stadium": {
-    "city": "London",
-    "state": "UK",
-    "type": "Open",
-    "lat": 51.5560,
-    "lon": -0.2795
-  }
-}
+[
+  {"team": "Arizona Cardinals", "id": "ARI", "name": "State Farm Stadium", "roof": "Retractable", "surface": "Grass"},
+  {"team": "Atlanta Falcons", "id": "ATL", "name": "Mercedes-Benz Stadium", "roof": "Retractable", "surface": "Turf"},
+  {"team": "Baltimore Ravens", "id": "BAL", "name": "M&T Bank Stadium", "roof": "Open", "surface": "Grass"},
+  {"team": "Buffalo Bills", "id": "BUF", "name": "Highmark Stadium", "roof": "Open", "surface": "Grass"},
+  {"team": "Carolina Panthers", "id": "CAR", "name": "Bank of America Stadium", "roof": "Open", "surface": "Turf"},
+  {"team": "Chicago Bears", "id": "CHI", "name": "Soldier Field", "roof": "Open", "surface": "Grass"},
+  {"team": "Cincinnati Bengals", "id": "CIN", "name": "Paycor Stadium", "roof": "Open", "surface": "Turf"},
+  {"team": "Cleveland Browns", "id": "CLE", "name": "Huntington Bank Field", "roof": "Open", "surface": "Grass"},
+  {"team": "Dallas Cowboys", "id": "DAL", "name": "AT&T Stadium", "roof": "Retractable", "surface": "Turf"},
+  {"team": "Denver Broncos", "id": "DEN", "name": "Empower Field at Mile High", "roof": "Open", "surface": "Grass"},
+  {"team": "Detroit Lions", "id": "DET", "name": "Ford Field", "roof": "Dome", "surface": "Turf"},
+  {"team": "Green Bay Packers", "id": "GB", "name": "Lambeau Field", "roof": "Open", "surface": "Grass"},
+  {"team": "Houston Texans", "id": "HOU", "name": "NRG Stadium", "roof": "Retractable", "surface": "Turf"},
+  {"team": "Indianapolis Colts", "id": "IND", "name": "Lucas Oil Stadium", "roof": "Retractable", "surface": "Turf"},
+  {"team": "Jacksonville Jaguars", "id": "JAX", "name": "EverBank Stadium", "roof": "Open", "surface": "Grass"},
+  {"team": "Kansas City Chiefs", "id": "KC", "name": "GEHA Field at Arrowhead Stadium", "roof": "Open", "surface": "Grass"},
+  {"team": "Las Vegas Raiders", "id": "LV", "name": "Allegiant Stadium", "roof": "Dome", "surface": "Turf"},
+  {"team": "Los Angeles Chargers", "id": "LAC", "name": "SoFi Stadium", "roof": "Dome", "surface": "Turf"},
+  {"team": "Los Angeles Rams", "id": "LAR", "name": "SoFi Stadium", "roof": "Dome", "surface": "Turf"},
+  {"team": "Miami Dolphins", "id": "MIA", "name": "Hard Rock Stadium", "roof": "Open", "surface": "Grass"},
+  {"team": "Minnesota Vikings", "id": "MIN", "name": "U.S. Bank Stadium", "roof": "Dome", "surface": "Turf"},
+  {"team": "New England Patriots", "id": "NE", "name": "Gillette Stadium", "roof": "Open", "surface": "Turf"},
+  {"team": "New Orleans Saints", "id": "NO", "name": "Caesars Superdome", "roof": "Dome", "surface": "Turf"},
+  {"team": "New York Giants", "id": "NYG", "name": "MetLife Stadium", "roof": "Open", "surface": "Turf"},
+  {"team": "New York Jets", "id": "NYJ", "name": "MetLife Stadium", "roof": "Open", "surface": "Turf"},
+  {"team": "Philadelphia Eagles", "id": "PHI", "name": "Lincoln Financial Field", "roof": "Open", "surface": "Grass"},
+  {"team": "Pittsburgh Steelers", "id": "PIT", "name": "Acrisure Stadium", "roof": "Open", "surface": "Grass"},
+  {"team": "San Francisco 49ers", "id": "SF", "name": "Levi's Stadium", "roof": "Open", "surface": "Grass"},
+  {"team": "Seattle Seahawks", "id": "SEA", "name": "Lumen Field", "roof": "Open", "surface": "Turf"},
+  {"team": "Tampa Bay Buccaneers", "id": "TB", "name": "Raymond James Stadium", "roof": "Open", "surface": "Grass"},
+  {"team": "Tennessee Titans", "id": "TEN", "name": "Nissan Stadium", "roof": "Open", "surface": "Turf"},
+  {"team": "Washington Commanders", "id": "WSH", "name": "Northwest Stadium", "roof": "Open", "surface": "Grass"}
+]
