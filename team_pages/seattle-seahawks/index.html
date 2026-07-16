@@ -3,107 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seattle Seahawks vs Dallas Cowboys Weather Forecast at Lumen Field | NFL Weather</title>
-    <meta name="description" content="Get the real-time weather forecast, wind speeds, playing surface details, and matchup analysis for Seattle Seahawks vs Dallas Cowboys at Lumen Field. Plan your fantasy start/sit decisions!">
+    <title>Seattle Seahawks vs Dallas Cowboys Weather Forecast at Lumen Field | Rain & Wind Forecast</title>
     
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../css/style.css">
+    <meta name="description" content="View the live weather forecast for the Seattle Seahawks vs Dallas Cowboys game at Lumen Field. Track real-time rain delay risks, stadium wind direction, hourly temperatures, and betting odds.">
+    <meta name="keywords" content="Seattle Seahawks weather, Lumen Field wind direction, Lumen Field rain delay, Seattle Seahawks game weather today, fantasy football weather, NFL weather">
+    <link rel="canonical" href="https://weathernfl.com/team_pages/seattle-seahawks/" />
     
-    <!-- Firebase Libraries -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <!-- OpenGraph / Social Meta -->
+    <meta property="og:title" content="Seattle Seahawks vs Dallas Cowboys Game Weather at Lumen Field - Weather NFL">
+    <meta property="og:description" content="Track stadium wind, hourly rain risks, and weather impact analytics for the Seattle Seahawks vs Dallas Cowboys game at Lumen Field.">
+    <meta property="og:url" content="https://weathernfl.com/team_pages/seattle-seahawks/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://weathernfl.com/social-share.png">
     
-    <!-- Dynamic ID Bridge to app.js -->
-    <script>
-        window.TARGET_TEAM_ID = "SEA";
+    <!-- Comprehensive Twitter Meta Tags (Compact Summary Mode) -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@weathernfldaily">
+    <meta name="twitter:creator" content="@weathernfldaily">
+    <meta name="twitter:title" content="Seattle Seahawks vs Dallas Cowboys Game Weather at Lumen Field - Weather NFL">
+    <meta name="twitter:description" content="Track stadium wind, hourly rain risks, and weather impact analytics for the Seattle Seahawks vs Dallas Cowboys game at Lumen Field.">
+    <meta name="twitter:image" content="https://weathernfl.com/social-share.png">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "SportsEvent",
+    "name": "Seattle Seahawks vs Dallas Cowboys Game",
+    "location": {
+        "@type": "Place",
+        "name": "Lumen Field",
+        "address": "Seattle, WA"
+    }
+}
     </script>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    
+    <style>
+        body { background-color: #f8f9fa; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; } 
+        .main-container { max-width: 520px; margin: 30px auto; padding: 0 15px; }
+        .game-card { border: 1px solid #dee2e6; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; overflow: hidden; }
+        .weather-row { font-size: 0.9rem; border-top: 1px solid #f1f3f5; padding-top: 8px; margin-top: 8px; padding-bottom: 4px; }
+        .stadium-name { color: #6c757d; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .wind-badge { font-size: 0.85rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; display: inline-block; }
+        .analysis-box { background-color: rgba(255, 255, 255, 0.6); border-left: 4px solid #0d6efd; padding: 8px 12px; margin-top: 12px; font-size: 0.8rem; color: #495057; line-height: 1.4; border-radius: 0 4px 4px 0; }
+        .analysis-title { font-weight: 800; text-transform: uppercase; font-size: 0.7rem; color: #0d6efd; display: block; margin-bottom: 4px; letter-spacing: 0.5px; }
+        
+        /* Hourly Forecast CSS */
+        .hourly-scroll-container { display: flex; overflow-x: auto; gap: 8px; padding: 8px 4px; margin-top: 8px; border-top: 1px solid rgba(0,0,0,0.05); scrollbar-width: thin; }
+        .hour-card { display: flex; flex: 1; flex-direction: column; align-items: center; min-width: 60px; text-align: center; }
+        .hour-time { font-size: 0.75rem; font-weight: 600; color: #6c757d; margin-bottom: 2px; }
+        .hour-icon { font-size: 1.3rem; line-height: 1; margin-bottom: 2px; }
+        .hour-pop { font-size: 0.65rem; color: #5ac8fa; font-weight: 700; line-height: 1; height: 12px; margin-bottom: 2px; }
+        .hour-temp { font-size: 0.85rem; font-weight: 600; color: #212529; line-height: 1; }
+        
+        /* Flowing Weather Gradients */
+        @keyframes weather-flow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .bg-weather-sunny { background: linear-gradient(-45deg, #e3f2fd, #e1f5fe, #f1f8e9); background-size: 300% 300%; animation: weather-flow 15s ease infinite; }
+        .bg-weather-cloudy { background: linear-gradient(-45deg, #f5f5f5, #e0e0e0, #eeeeee); background-size: 300% 300%; animation: weather-flow 20s ease infinite; }
+        .bg-weather-rain { background: linear-gradient(180deg, #e3f2fd, #cfd8dc, #eceff1); background-size: 200% 200%; animation: weather-flow 8s ease infinite; }
+        .bg-weather-storm { background: linear-gradient(-45deg, #e1bee7, #cfd8dc, #e0e0e0); background-size: 300% 300%; animation: weather-flow 10s ease infinite; }
+        .bg-weather-snow { background: linear-gradient(-45deg, #f3e5f5, #e3f2fd, #ffffff); background-size: 300% 300%; animation: weather-flow 15s ease infinite; }
+        .bg-weather-roof { background-color: #ffffff; }
+    </style>
 </head>
-<body class="bg-light">
-
-    <!-- Navbar / Header -->
-    <nav class="navbar navbar-dark bg-dark shadow-sm">
-        <div class="container d-flex justify-content-between align-items-center">
-            <a class="navbar-brand fw-bold" href="../../index.html">🏈 NFL Weather</a>
+<body>
+    <nav class="navbar shadow-sm py-2 mb-0 sticky-top" style="background-color: #0f172a;">
+        <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <a href="/" class="navbar-brand text-white fw-bold m-0" style="font-style: italic; font-size: 1.6rem;">
+                Weather <span style="color: #5ac8fa;">NFL</span>
+            </a>
             
-            <!-- Teams Dropdown Menu -->
-            <div class="dropdown">
-                <button class="btn btn-outline-light btn-sm dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Change Team
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end scrollable-menu" style="max-height: 300px; overflow-y: auto;">
-                    <li><a class="dropdown-item" href="../arizona-cardinals/index.html">Arizona Cardinals</a></li>
-<li><a class="dropdown-item" href="../atlanta-falcons/index.html">Atlanta Falcons</a></li>
-<li><a class="dropdown-item" href="../baltimore-ravens/index.html">Baltimore Ravens</a></li>
-<li><a class="dropdown-item" href="../buffalo-bills/index.html">Buffalo Bills</a></li>
-<li><a class="dropdown-item" href="../carolina-panthers/index.html">Carolina Panthers</a></li>
-<li><a class="dropdown-item" href="../chicago-bears/index.html">Chicago Bears</a></li>
-<li><a class="dropdown-item" href="../cincinnati-bengals/index.html">Cincinnati Bengals</a></li>
-<li><a class="dropdown-item" href="../cleveland-browns/index.html">Cleveland Browns</a></li>
-<li><a class="dropdown-item" href="../dallas-cowboys/index.html">Dallas Cowboys</a></li>
-<li><a class="dropdown-item" href="../denver-broncos/index.html">Denver Broncos</a></li>
-<li><a class="dropdown-item" href="../detroit-lions/index.html">Detroit Lions</a></li>
-<li><a class="dropdown-item" href="../green-bay-packers/index.html">Green Bay Packers</a></li>
-<li><a class="dropdown-item" href="../houston-texans/index.html">Houston Texans</a></li>
-<li><a class="dropdown-item" href="../indianapolis-colts/index.html">Indianapolis Colts</a></li>
-<li><a class="dropdown-item" href="../jacksonville-jaguars/index.html">Jacksonville Jaguars</a></li>
-<li><a class="dropdown-item" href="../kansas-city-chiefs/index.html">Kansas City Chiefs</a></li>
-<li><a class="dropdown-item" href="../las-vegas-raiders/index.html">Las Vegas Raiders</a></li>
-<li><a class="dropdown-item" href="../los-angeles-chargers/index.html">Los Angeles Chargers</a></li>
-<li><a class="dropdown-item" href="../los-angeles-rams/index.html">Los Angeles Rams</a></li>
-<li><a class="dropdown-item" href="../miami-dolphins/index.html">Miami Dolphins</a></li>
-<li><a class="dropdown-item" href="../minnesota-vikings/index.html">Minnesota Vikings</a></li>
-<li><a class="dropdown-item" href="../new-england-patriots/index.html">New England Patriots</a></li>
-<li><a class="dropdown-item" href="../new-orleans-saints/index.html">New Orleans Saints</a></li>
-<li><a class="dropdown-item" href="../new-york-giants/index.html">New York Giants</a></li>
-<li><a class="dropdown-item" href="../new-york-jets/index.html">New York Jets</a></li>
-<li><a class="dropdown-item" href="../philadelphia-eagles/index.html">Philadelphia Eagles</a></li>
-<li><a class="dropdown-item" href="../pittsburgh-steelers/index.html">Pittsburgh Steelers</a></li>
-<li><a class="dropdown-item" href="../san-francisco-49ers/index.html">San Francisco 49ers</a></li>
-<li><a class="dropdown-item" href="../seattle-seahawks/index.html">Seattle Seahawks</a></li>
-<li><a class="dropdown-item" href="../tampa-bay-buccaneers/index.html">Tampa Bay Buccaneers</a></li>
-<li><a class="dropdown-item" href="../tennessee-titans/index.html">Tennessee Titans</a></li>
-<li><a class="dropdown-item" href="../washington-commanders/index.html">Washington Commanders</a></li>
+            <div class="d-flex align-items-center gap-2">
+                <select id="team-nav-select" class="form-select form-select-sm fw-bold" style="background-color: #1e293b; color: #adb5bd; border: 1px solid #334155; cursor: pointer; max-width: 180px;" onchange="if(this.value) window.location.href=this.value;">
+                    <option value="">Switch Team</option>
+                    <option value="/team_pages/arizona-cardinals/">Arizona Cardinals</option>
+                    <option value="/team_pages/atlanta-falcons/">Atlanta Falcons</option>
+                    <option value="/team_pages/baltimore-ravens/">Baltimore Ravens</option>
+                    <option value="/team_pages/buffalo-bills/">Buffalo Bills</option>
+                    <option value="/team_pages/carolina-panthers/">Carolina Panthers</option>
+                    <option value="/team_pages/chicago-bears/">Chicago Bears</option>
+                    <option value="/team_pages/cincinnati-bengals/">Cincinnati Bengals</option>
+                    <option value="/team_pages/cleveland-browns/">Cleveland Browns</option>
+                    <option value="/team_pages/dallas-cowboys/">Dallas Cowboys</option>
+                    <option value="/team_pages/denver-broncos/">Denver Broncos</option>
+                    <option value="/team_pages/detroit-lions/">Detroit Lions</option>
+                    <option value="/team_pages/green-bay-packers/">Green Bay Packers</option>
+                    <option value="/team_pages/houston-texans/">Houston Texans</option>
+                    <option value="/team_pages/indianapolis-colts/">Indianapolis Colts</option>
+                    <option value="/team_pages/jacksonville-jaguars/">Jacksonville Jaguars</option>
+                    <option value="/team_pages/kansas-city-chiefs/">Kansas City Chiefs</option>
+                    <option value="/team_pages/las-vegas-raiders/">Las Vegas Raiders</option>
+                    <option value="/team_pages/los-angeles-chargers/">Los Angeles Chargers</option>
+                    <option value="/team_pages/los-angeles-rams/">Los Angeles Rams</option>
+                    <option value="/team_pages/miami-dolphins/">Miami Dolphins</option>
+                    <option value="/team_pages/minnesota-vikings/">Minnesota Vikings</option>
+                    <option value="/team_pages/new-england-patriots/">New England Patriots</option>
+                    <option value="/team_pages/new-orleans-saints/">New Orleans Saints</option>
+                    <option value="/team_pages/new-york-giants/">New York Giants</option>
+                    <option value="/team_pages/new-york-jets/">New York Jets</option>
+                    <option value="/team_pages/philadelphia-eagles/">Philadelphia Eagles</option>
+                    <option value="/team_pages/pittsburgh-steelers/">Pittsburgh Steelers</option>
+                    <option value="/team_pages/san-francisco-49ers/">San Francisco 49ers</option>
+                    <option value="/team_pages/seattle-seahawks/">Seattle Seahawks</option>
+                    <option value="/team_pages/tampa-bay-buccaneers/">Tampa Bay Buccaneers</option>
+                    <option value="/team_pages/tennessee-titans/">Tennessee Titans</option>
+                    <option value="/team_pages/washington-commanders/">Washington Commanders</option>
 
-                </ul>
+                </select>
+                <a href="/" class="btn btn-sm btn-outline-light px-3 fw-bold" style="font-size: 0.75rem;">
+                    Full Slate
+                </a>
             </div>
         </div>
     </nav>
-
-    <!-- Main Content Container -->
-    <div class="container my-4">
-        <div class="text-center mb-4">
-            <h1 class="fw-bold text-dark">Live Weather Forecast: Seattle Seahawks vs Dallas Cowboys</h1>
-            <p class="text-muted fs-6">Playing at Lumen Field</p>
-        </div>
-
-        <!-- This Container is Dynamically Populated by app.js from Firebase -->
-        <div id="team-weather-container" class="row justify-content-center">
-            <div class="text-center py-5">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading Game Forecasts...</span>
-                </div>
+    
+    <div class="main-container">
+        <div id="team-weather-container">
+            <div class="text-center p-5 text-muted">
+                <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+                Loading Seattle Seahawks forecast...
             </div>
         </div>
     </div>
-
-    <!-- Windy Radar Modal -->
-    <div class="modal fade" id="radarModal" tabindex="-1" aria-labelledby="radarModalLabel" aria-hidden="true">
+    
+    <!-- LIVE RADAR MODAL -->
+    <div class="modal fade" id="radarModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="radarModalLabel">Live Radar</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content shadow">
+                <div class="modal-header bg-dark text-white border-0 py-2">
+                    <h5 class="modal-title fw-bold" style="font-size: 1rem;">Live Weather Radar</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-0" style="height: 450px;">
-                    <iframe id="radarFrame" src="" width="100%" height="100%" frameborder="0"></iframe>
+                <div class="modal-body p-0 bg-light" style="height: 60vh;">
+                    <iframe id="radarFrame" src="" class="w-100 h-100 border-0" allowfullscreen></iframe>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Bootstrap & Custom Javascript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        window.TARGET_TEAM_ID = "SEA";
+        document.addEventListener("DOMContentLoaded", () => {
+            const selectMenu = document.getElementById("team-nav-select");
+            if (selectMenu) {
+                selectMenu.value = `/team_pages/seattle-seahawks/`;
+            }
+        });
+    </script>
     <script src="../../js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
