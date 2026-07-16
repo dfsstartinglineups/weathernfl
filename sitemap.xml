@@ -4,7 +4,7 @@
     <url>
         <loc>https://weathernfl.com/</loc>
         <lastmod>2026-07-15</lastmod>
-        <changefreq>daily</changefreq>
+        <changefreq>always</changefreq>
         <priority>1.0</priority>
     </url>
 
