@@ -41,10 +41,15 @@ def main():
     <meta property="og:description" content="Track stadium wind, hourly rain risks, and weather impact analytics for the {team_name} game at {stadium_name}.">
     <meta property="og:url" content="https://weathernfl.com/team_pages/{team_slug}/">
     <meta property="og:type" content="website">
+    <meta property="og:image" content="https://weathernfl.com/social-share.png">
     
-    <!-- Twitter Meta Tags -->
+    <!-- Comprehensive Twitter Meta Tags (Compact Summary Mode) -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@weathernfldaily">
+    <meta name="twitter:creator" content="@weathernfldaily">
+    <meta name="twitter:title" content="{team_name} Game Weather at {stadium_name} - Weather NFL">
+    <meta name="twitter:description" content="Track stadium wind, hourly rain risks, and weather impact analytics for the {team_name} game at {stadium_name}.">
+    <meta name="twitter:image" content="https://weathernfl.com/social-share.png">
     
     <script type="application/ld+json">
     {{
@@ -114,7 +119,6 @@ def main():
     </nav>
 
     <div class="main-container">
-        <!-- Replaced row/col logic with MLB style isolated single-card container -->
         <div id="team-weather-container">
             <div class="text-center p-5 text-muted">
                 <div class="spinner-border spinner-border-sm text-primary me-2"></div>
@@ -139,7 +143,6 @@ def main():
     </div>
 
     <script>
-        // Set the global target team so app.js knows which games to filter
         window.TARGET_TEAM_ID = "{team_id}";
         
         document.addEventListener("DOMContentLoaded", () => {{
@@ -162,7 +165,7 @@ def main():
         with open(filepath, 'w', encoding='utf-8') as outfile:
             outfile.write(html_content)
 
-    print(f"✅ Generated {len(stadiums)} SEO team folders/pages.")
+    print(f"✅ Generated {len(stadiums)} SEO team folders/pages with compact Twitter meta cards.")
 
 if __name__ == "__main__":
     main()
