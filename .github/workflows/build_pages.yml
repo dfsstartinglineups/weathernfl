@@ -23,23 +23,23 @@ jobs:
         with:
           python-version: '3.9'
 
-      # 1. NEW: Install the required firebase-admin python package
+      # 1. Install required packages
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install firebase-admin
           
-      # 2. NEW: Pass the repository secret as an environment variable
+      # 2. Run the script (using Firebase secret)
       - name: Generate Static HTML
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: python scripts/generate_weather_pages.py
         
-      # 3. UPDATED: Changed path to "build/" to match the python script's output
+      # 3. Commit and Push back to team_pages/
       - name: Commit and Push Pages
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add build/
+          git add team_pages/
           git commit -m "🚀 Auto-generate team SEO pages" || exit 0
           git push
