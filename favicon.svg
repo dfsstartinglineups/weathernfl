@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Expanded mathematical boundary for the jumbo football -->
+    <clipPath id="football-boundary">
+      <path d="M -190 0 C -110 -130, 110 -130, 190 0 C 110 130, -110 130, -190 0 Z" />
+    </clipPath>
+  </defs>
+
+  <!-- Smooth Dark Slate Squircle Background -->
+  <rect width="512" height="512" rx="128" fill="#0f172a"/>
+  
+  <!-- Jumbo Tilted Football -->
+  <g transform="translate(256, 310) rotate(-28)">
+    <!-- Football Leather Body -->
+    <path d="M -190 0 C -110 -130, 110 -130, 190 0 C 110 130, -110 130, -190 0 Z" fill="#b05d38"/>
+    
+    <!-- Clipped Jumbo White Stripes -->
+    <g clip-path="url(#football-boundary)">
+      <path d="M -145 -130 C -125 -60, -125 60, -145 130" fill="none" stroke="#ffffff" stroke-width="26" stroke-linecap="round"/>
+      <path d="M 145 -130 C 125 -60, 125 60, 145 130" fill="none" stroke="#ffffff" stroke-width="26" stroke-linecap="round"/>
+    </g>
+    
+    <!-- Bold Lacing Detail -->
+    <line x1="-70" y1="0" x2="70" y2="0" stroke="#ffffff" stroke-width="18" stroke-linecap="round"/>
+    <line x1="-42" y1="-24" x2="-42" y2="24" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
+    <line x1="-14" y1="-24" x2="-14" y2="24" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
+    <line x1="14" y1="-24" x2="14" y2="24" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
+    <line x1="42" y1="-24" x2="42" y2="24" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
+  </g>
+
+  <!-- Expanded Stormy Grey Cloud -->
+  <path d="M 90 170 
+           A 65 65 0 0 1 180 80 
+           A 100 100 0 0 1 350 80 
+           A 65 65 0 0 1 410 170 
+           A 50 50 0 0 1 380 240 
+           L 120 240 
+           A 50 50 0 0 1 90 170 Z" 
+        fill="#64748b"/>
+
+  <!-- Giant Diagonal Lightning Bolt (Lowered & Tucked Into Cloud) -->
+  
+  <!-- LAYER 1: Thick Dark Outline Underneath -->
+  <path d="M 280 115 
+           L 210 230 
+           L 270 230 
+           L 140 450 
+           L 310 210 
+           L 245 210 Z" 
+        fill="#0f172a" 
+        stroke="#0f172a" 
+        stroke-width="18" 
+        stroke-linejoin="round"/>
+
+  <!-- LAYER 2: Pure Yellow Fill On Top (Guarantees yellow tips) -->
+  <path d="M 280 115 
+           L 210 230 
+           L 270 230 
+           L 140 450 
+           L 310 210 
+           L 245 210 Z" 
+        fill="#facc15"/>
+</svg>
