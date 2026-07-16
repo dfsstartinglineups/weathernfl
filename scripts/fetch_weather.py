@@ -33,51 +33,39 @@ def get_week_label(stype, wk):
     elif stype == 3: return f"Postseason Week {wk}"
     return f"Week {wk}"
 
-def find_active_week():
+def get_current_nfl_week():
+    """
+    Directly targets the correct Season Type based on the calendar month.
+    July/Aug = Preseason (seasontype 1). Sept-Feb = Reg/Post (seasontype 2 or 3).
+    """
     now = datetime.datetime.now()
-    season_year = now.year if now.month > 3 else now.year - 1
+    season_year = now.year if now.month > 2 else now.year - 1
     
-    url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates={season_year}"
-    
-    stype = 2
-    wk = 1
+    # If we are in July or August, explicitly force Preseason Week 1
+    if now.month in [7, 8]:
+        return 1, 1, season_year
+        
+    # Otherwise, let ESPN tell us the current active Regular/Post season week
     try:
-        data = requests.get(url, timeout=10).json()
+        base_url = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
+        data = requests.get(base_url, timeout=10).json()
         stype = data.get('season', {}).get('type', 2)
         wk = data.get('week', {}).get('number', 1)
+        return stype, wk, season_year
     except:
-        pass
-
-    # ESPN skips preseason in the summer and defaults to Reg Season Wk 1. 
-    # If it's July or August, manually scan preseason weeks to find the active one.
-    if stype == 2 and wk == 1 and now.month in [6, 7, 8]:
-        for p_week in range(1, 5):
-            p_url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates={season_year}&seasontype=1&week={p_week}"
-            try:
-                p_data = requests.get(p_url, timeout=5).json()
-                events = p_data.get('events', [])
-                # Return the first preseason week that has scheduled/live games
-                if events and any(e['status']['type']['state'] in ['pre', 'in'] for e in events):
-                    return 1, p_week
-            except:
-                continue
-        return 1, 1 # Fallback to preseason week 1
-        
-    return stype, wk
+        return 2, 1, season_year
 
 def main():
-    print("🏈 Fetching ESPN NFL Schedule (Current & Next Week) & Weather...")
-    now = datetime.datetime.now()
-    season_year = now.year if now.month > 3 else now.year - 1
+    print("🏈 Fetching ESPN NFL Schedule & Weather...")
+    
+    # 1. Grab the exact active week and season type
+    current_season_type, current_week, season_year = get_current_nfl_week()
 
-    # 1. Smartly determine the actual active week
-    current_season_type, current_week = find_active_week()
-
-    # 2. Calculate the "Next Week" for the toggle button
+    # 2. Calculate the "Next Week" for the UI toggle button
     next_season_type = current_season_type
     next_week = current_week + 1
 
-    # Handle transitions (Preseason Week 4 -> Regular Season Week 1)
+    # Handle the transition from Preseason to Regular Season
     if current_season_type == 1 and current_week >= 4:
         next_season_type = 2
         next_week = 1
@@ -85,6 +73,7 @@ def main():
         next_season_type = 3
         next_week = 1
 
+    # 3. Build the exact API URLs using the seasontype parameter
     fetches = [
         {
             "url": f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates={season_year}&seasontype={current_season_type}&week={current_week}",
@@ -117,6 +106,7 @@ def main():
             stadium_info = stadiums_dict.get(home_abbr, None)
             weather_data = {"temperature_2m": 72, "wind_speed_10m": 0, "precipitation": 0} 
             
+            # Fetch weather if it's an outdoor stadium
             if stadium_info and stadium_info['roof'] != "Dome":
                 weather_data = fetch_open_meteo(stadium_info['lat'], stadium_info['lon'])
                 
@@ -139,10 +129,10 @@ def main():
                 }
             }
     
-    # Push straight to Firebase
+    # 4. Push directly to Firebase
     if firebase_admin._apps:
         db.reference('nfl_weather').set(live_state)
-        print(f"✅ Firebase updated successfully with {len(live_state)} games across 2 weeks.")
+        print(f"✅ Firebase updated successfully with {len(live_state)} games.")
     else:
         print("⚠️ Firebase not initialized. Skipping push.")
 
