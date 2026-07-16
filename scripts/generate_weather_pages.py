@@ -15,7 +15,7 @@ def main():
     links_html = ""
     for s in sorted(stadiums, key=lambda x: x['team']):
         team_slug = slugify(s['team'])
-        links_html += f'                    <option value="/team_pages/{team_slug}.html">{s["team"]}</option>\n'
+        links_html += f'                    <option value="/team_pages/{team_slug}/">{s["team"]}</option>\n'
 
     for s in stadiums:
         team_name = s['team']
@@ -34,12 +34,12 @@ def main():
     
     <meta name="description" content="View the live weather forecast for the {team_name} game at {stadium_name}. Track real-time rain delay risks, stadium wind direction, hourly temperatures, and betting odds.">
     <meta name="keywords" content="{team_name} weather, {stadium_name} wind direction, {stadium_name} rain delay, {team_name} game weather today, fantasy football weather, NFL weather">
-    <link rel="canonical" href="https://weathernfl.com/team_pages/{team_slug}.html" />
+    <link rel="canonical" href="https://weathernfl.com/team_pages/{team_slug}/" />
     
     <!-- OpenGraph / Social Meta -->
     <meta property="og:title" content="{team_name} Game Weather at {stadium_name} - Weather NFL">
     <meta property="og:description" content="Track stadium wind, hourly rain risks, and weather impact analytics for the {team_name} game at {stadium_name}.">
-    <meta property="og:url" content="https://weathernfl.com/team_pages/{team_slug}.html">
+    <meta property="og:url" content="https://weathernfl.com/team_pages/{team_slug}/">
     <meta property="og:type" content="website">
     
     <!-- Twitter Meta Tags -->
@@ -145,20 +145,24 @@ def main():
         document.addEventListener("DOMContentLoaded", () => {{
             const selectMenu = document.getElementById("team-nav-select");
             if (selectMenu) {{
-                selectMenu.value = `/team_pages/{team_slug}.html`;
+                selectMenu.value = `/team_pages/{team_slug}/`;
             }}
         }});
     </script>
-    <script src="../js/app.js"></script>
+    <script src="../../js/app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>"""
         
-        filepath = os.path.join('team_pages', f"{team_slug}.html")
+        # Create the team directory and write index.html inside it
+        team_dir = os.path.join('team_pages', team_slug)
+        os.makedirs(team_dir, exist_ok=True)
+        filepath = os.path.join(team_dir, "index.html")
+        
         with open(filepath, 'w', encoding='utf-8') as outfile:
             outfile.write(html_content)
 
-    print(f"✅ Generated {len(stadiums)} SEO team pages.")
+    print(f"✅ Generated {len(stadiums)} SEO team folders/pages.")
 
 if __name__ == "__main__":
     main()
