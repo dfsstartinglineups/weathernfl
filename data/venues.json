@@ -8,32 +8,14 @@
     "lat": 40.8198,
     "lon": -81.3983
   },
-  "3738": {
-    "name": "Gillette Stadium",
-    "city": "Foxborough",
-    "state": "MA",
+  "3874": {
+    "name": "Paycor Stadium",
+    "city": "Cincinnati",
+    "state": "OH",
     "roof": "Open",
     "surface": "Turf",
-    "lat": 42.0909,
-    "lon": -71.2643
-  },
-  "3839": {
-    "name": "MetLife Stadium",
-    "city": "East Rutherford",
-    "state": "NJ",
-    "roof": "Open",
-    "surface": "Turf",
-    "lat": 40.8128,
-    "lon": -74.0742
-  },
-  "3948": {
-    "name": "Hard Rock Stadium",
-    "city": "Miami Gardens",
-    "state": "FL",
-    "roof": "Open",
-    "surface": "Grass",
-    "lat": 25.9581,
-    "lon": -80.2389
+    "lat": 39.0955,
+    "lon": -84.5161
   },
   "3752": {
     "name": "Acrisure Stadium",
@@ -44,131 +26,14 @@
     "lat": 40.4468,
     "lon": -80.0158
   },
-  "3814": {
-    "name": "M&T Bank Stadium",
-    "city": "Baltimore",
-    "state": "MD",
-    "roof": "Open",
-    "surface": "Grass",
-    "lat": 39.2780,
-    "lon": -76.6227
-  },
-  "11938": {
-    "name": "Highmark Stadium",
-    "city": "Orchard Park",
-    "state": "NY",
-    "roof": "Open",
-    "surface": "Grass",
-    "lat": 42.7738,
-    "lon": -78.7868
-  },
-  "5239": {
-    "name": "U.S. Bank Stadium",
-    "city": "Minneapolis",
-    "state": "MN",
-    "roof": "Dome",
-    "surface": "Turf",
-    "lat": 44.9735,
-    "lon": -93.2575
-  },
-  "3679": {
-    "name": "Huntington Bank Field",
-    "city": "Cleveland",
-    "state": "OH",
-    "roof": "Open",
-    "surface": "Grass",
-    "lat": 41.5061,
-    "lon": -81.6995
-  },
-  "3874": {
-    "name": "Paycor Stadium",
-    "city": "Cincinnati",
-    "state": "OH",
+  "3738": {
+    "name": "Gillette Stadium",
+    "city": "Foxborough",
+    "state": "MA",
     "roof": "Open",
     "surface": "Turf",
-    "lat": 39.0955,
-    "lon": -84.5161
-  },
-  "3810": {
-    "name": "Nissan Stadium",
-    "city": "Nashville",
-    "state": "TN",
-    "roof": "Open",
-    "surface": "Turf",
-    "lat": 36.1665,
-    "lon": -86.7713
-  },
-  "3712": {
-    "name": "EverBank Stadium",
-    "city": "Jacksonville",
-    "state": "FL",
-    "roof": "Open",
-    "surface": "Grass",
-    "lat": 30.3239,
-    "lon": -81.6373
-  },
-  "7065": {
-    "name": "SoFi Stadium",
-    "city": "Inglewood",
-    "state": "CA",
-    "roof": "Dome",
-    "surface": "Turf",
-    "lat": 33.9535,
-    "lon": -118.3390
-  },
-  "3970": {
-    "name": "State Farm Stadium",
-    "city": "Glendale",
-    "state": "AZ",
-    "roof": "Retractable",
-    "surface": "Grass",
-    "lat": 33.5276,
-    "lon": -112.2626
-  },
-  "3812": {
-    "name": "Lucas Oil Stadium",
-    "city": "Indianapolis",
-    "state": "IN",
-    "roof": "Retractable",
-    "surface": "Turf",
-    "lat": 39.7601,
-    "lon": -86.1639
-  },
-  "3933": {
-    "name": "Soldier Field",
-    "city": "Chicago",
-    "state": "IL",
-    "roof": "Open",
-    "surface": "Grass",
-    "lat": 41.8623,
-    "lon": -87.6167
-  },
-  "3891": {
-    "name": "NRG Stadium",
-    "city": "Houston",
-    "state": "TX",
-    "roof": "Retractable",
-    "surface": "Turf",
-    "lat": 29.6847,
-    "lon": -95.4107
-  },
-  "3622": {
-    "name": "GEHA Field at Arrowhead Stadium",
-    "city": "Kansas City",
-    "state": "MO",
-    "roof": "Open",
-    "surface": "Grass",
-    "lat": 39.0489,
-    "lon": -94.4839
-  },
-  "3628": {
-    "name": "Bank of America Stadium",
-    "city": "Charlotte",
-    "state": "NC",
-    "roof": "Open",
-    "surface": "Turf",
-    "lat": 35.2258,
-    "lon": -80.8528
+    "lat": 42.0909,
+    "lon": -71.2643
   },
   "6501": {
     "name": "Allegiant Stadium",
@@ -179,14 +44,14 @@
     "lat": 36.0909,
     "lon": -115.1833
   },
-  "3937": {
-    "name": "Empower Field at Mile High",
-    "city": "Denver",
-    "state": "CO",
-    "roof": "Open",
-    "surface": "Grass",
-    "lat": 39.7439,
-    "lon": -105.0201
+  "3891": {
+    "name": "NRG Stadium",
+    "city": "Houston",
+    "state": "TX",
+    "roof": "Retractable",
+    "surface": "Turf",
+    "lat": 29.6847,
+    "lon": -95.4107
   },
   "4738": {
     "name": "Levi's Stadium",
@@ -206,14 +71,104 @@
     "lat": 33.7554,
     "lon": -84.4010
   },
-  "3886": {
-    "name": "Raymond James Stadium",
-    "city": "Tampa",
+  "3839": {
+    "name": "MetLife Stadium",
+    "city": "East Rutherford",
+    "state": "NJ",
+    "roof": "Open",
+    "surface": "Turf",
+    "lat": 40.8128,
+    "lon": -74.0742
+  },
+  "3719": {
+    "name": "Northwest Stadium",
+    "city": "Landover",
+    "state": "MD",
+    "roof": "Open",
+    "surface": "Grass",
+    "lat": 38.9076,
+    "lon": -76.8645
+  },
+  "11938": {
+    "name": "Highmark Stadium",
+    "city": "Orchard Park",
+    "state": "NY",
+    "roof": "Open",
+    "surface": "Grass",
+    "lat": 42.7738,
+    "lon": -78.7868
+  },
+  "3933": {
+    "name": "Soldier Field",
+    "city": "Chicago",
+    "state": "IL",
+    "roof": "Open",
+    "surface": "Grass",
+    "lat": 41.8623,
+    "lon": -87.6167
+  },
+  "3622": {
+    "name": "GEHA Field at Arrowhead Stadium",
+    "city": "Kansas City",
+    "state": "MO",
+    "roof": "Open",
+    "surface": "Grass",
+    "lat": 39.0489,
+    "lon": -94.4839
+  },
+  "3493": {
+    "name": "Caesars Superdome",
+    "city": "New Orleans",
+    "state": "LA",
+    "roof": "Dome",
+    "surface": "Turf",
+    "lat": 29.9511,
+    "lon": -90.0812
+  },
+  "3814": {
+    "name": "M&T Bank Stadium",
+    "city": "Baltimore",
+    "state": "MD",
+    "roof": "Open",
+    "surface": "Grass",
+    "lat": 39.2780,
+    "lon": -76.6227
+  },
+  "3673": {
+    "name": "Lumen Field",
+    "city": "Seattle",
+    "state": "WA",
+    "roof": "Open",
+    "surface": "Turf",
+    "lat": 47.5952,
+    "lon": -122.3316
+  },
+  "7065": {
+    "name": "SoFi Stadium",
+    "city": "Inglewood",
+    "state": "CA",
+    "roof": "Dome",
+    "surface": "Turf",
+    "lat": 33.9535,
+    "lon": -118.3390
+  },
+  "3712": {
+    "name": "EverBank Stadium",
+    "city": "Jacksonville",
     "state": "FL",
     "roof": "Open",
     "surface": "Grass",
-    "lat": 27.9759,
-    "lon": -82.5033
+    "lat": 30.3239,
+    "lon": -81.6373
+  },
+  "3937": {
+    "name": "Empower Field at Mile High",
+    "city": "Denver",
+    "state": "CO",
+    "roof": "Open",
+    "surface": "Grass",
+    "lat": 39.7439,
+    "lon": -105.0201
   },
   "3727": {
     "name": "Ford Field",
@@ -223,6 +178,87 @@
     "surface": "Turf",
     "lat": 42.3400,
     "lon": -83.0456
+  },
+  "3679": {
+    "name": "Huntington Bank Field",
+    "city": "Cleveland",
+    "state": "OH",
+    "roof": "Open",
+    "surface": "Grass",
+    "lat": 41.5061,
+    "lon": -81.6995
+  },
+  "3812": {
+    "name": "Lucas Oil Stadium",
+    "city": "Indianapolis",
+    "state": "IN",
+    "roof": "Retractable",
+    "surface": "Turf",
+    "lat": 39.7601,
+    "lon": -86.1639
+  },
+  "5239": {
+    "name": "U.S. Bank Stadium",
+    "city": "Minneapolis",
+    "state": "MN",
+    "roof": "Dome",
+    "surface": "Turf",
+    "lat": 44.9735,
+    "lon": -93.2575
+  },
+  "3948": {
+    "name": "Hard Rock Stadium",
+    "city": "Miami Gardens",
+    "state": "FL",
+    "roof": "Open",
+    "surface": "Grass",
+    "lat": 25.9581,
+    "lon": -80.2389
+  },
+  "3886": {
+    "name": "Raymond James Stadium",
+    "city": "Tampa",
+    "state": "FL",
+    "roof": "Open",
+    "surface": "Grass",
+    "lat": 27.9759,
+    "lon": -82.5033
+  },
+  "3970": {
+    "name": "State Farm Stadium",
+    "city": "Glendale",
+    "state": "AZ",
+    "roof": "Retractable",
+    "surface": "Grass",
+    "lat": 33.5276,
+    "lon": -112.2626
+  },
+  "3810": {
+    "name": "Nissan Stadium",
+    "city": "Nashville",
+    "state": "TN",
+    "roof": "Open",
+    "surface": "Turf",
+    "lat": 36.1665,
+    "lon": -86.7713
+  },
+  "3628": {
+    "name": "Bank of America Stadium",
+    "city": "Charlotte",
+    "state": "NC",
+    "roof": "Open",
+    "surface": "Turf",
+    "lat": 35.2258,
+    "lon": -80.8528
+  },
+  "3687": {
+    "name": "AT&T Stadium",
+    "city": "Arlington",
+    "state": "TX",
+    "roof": "Retractable",
+    "surface": "Turf",
+    "lat": 32.7473,
+    "lon": -97.0945
   },
   "3798": {
     "name": "Lambeau Field",
@@ -242,50 +278,23 @@
     "lat": 39.9008,
     "lon": -75.1675
   },
-  "3687": {
-    "name": "AT&T Stadium",
-    "city": "Arlington",
-    "state": "TX",
-    "roof": "Retractable",
-    "surface": "Turf",
-    "lat": 32.7473,
-    "lon": -97.0945
-  },
-  "3673": {
-    "name": "Lumen Field",
-    "city": "Seattle",
-    "state": "WA",
-    "roof": "Open",
-    "surface": "Turf",
-    "lat": 47.5952,
-    "lon": -122.3316
-  },
-  "3493": {
-    "name": "Caesars Superdome",
-    "city": "New Orleans",
-    "state": "LA",
-    "roof": "Dome",
-    "surface": "Turf",
-    "lat": 29.9511,
-    "lon": -90.0812
-  },
-  "3719": {
-    "name": "Northwest Stadium",
-    "city": "Landover",
-    "state": "MD",
+  "9119": {
+    "name": "Melbourne Cricket Ground",
+    "city": "Melbourne",
+    "state": "Australia",
     "roof": "Open",
     "surface": "Grass",
-    "lat": 38.9076,
-    "lon": -76.8645
+    "lat": -37.8199,
+    "lon": 144.9834
   },
-  "8748": {
-    "name": "Corinthians Arena",
-    "city": "Sao Paulo",
+  "11931": {
+    "name": "Maracanã Stadium",
+    "city": "Rio De Janeiro",
     "state": "Brazil",
     "roof": "Open",
     "surface": "Grass",
-    "lat": -23.5453,
-    "lon": -46.4742
+    "lat": -22.9122,
+    "lon": -43.2302
   },
   "5534": {
     "name": "Tottenham Hotspur Stadium",
@@ -305,8 +314,26 @@
     "lat": 51.5560,
     "lon": -0.2795
   },
-  "1775": {
-    "name": "Allianz Arena",
+  "1781": {
+    "name": "Stade de France",
+    "city": "Saint-Denis",
+    "state": "France",
+    "roof": "Open",
+    "surface": "Grass",
+    "lat": 48.9245,
+    "lon": 2.3602
+  },
+  "1353": {
+    "name": "Santiago Bernabéu",
+    "city": "Madrid",
+    "state": "Spain",
+    "roof": "Retractable",
+    "surface": "Grass",
+    "lat": 40.4530,
+    "lon": -3.6883
+  },
+  "11930": {
+    "name": "FC Bayern Munich Stadium",
     "city": "Munich",
     "state": "Germany",
     "roof": "Open",
@@ -314,13 +341,13 @@
     "lat": 48.2188,
     "lon": 11.6247
   },
-  "4013": {
-    "name": "Camping World Stadium",
-    "city": "Orlando",
-    "state": "FL",
+  "8219": {
+    "name": "Estadio Banorte",
+    "city": "Mexico City",
+    "state": "Mexico",
     "roof": "Open",
-    "surface": "Turf",
-    "lat": 28.5389,
-    "lon": -81.4028
+    "surface": "Grass",
+    "lat": 19.3029,
+    "lon": -99.1505
   }
 }
