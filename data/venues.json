@@ -53,12 +53,12 @@
     "lat": 39.2780,
     "lon": -76.6227
   },
-  "3883": {
+  "XXXX": {
     "name": "Highmark Stadium",
     "city": "Orchard Park",
     "state": "NY",
     "roof": "Open",
-    "surface": "Turf",
+    "surface": "Grass",
     "lat": 42.7738,
     "lon": -78.7868
   },
