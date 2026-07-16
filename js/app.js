@@ -1,8 +1,8 @@
 // ==========================================
 // STATE MANAGEMENT & FIREBASE (MLB STYLE)
 // ==========================================
-// FORCE DEFAULT: Always start collapsed on a fresh page load, ignoring past browser memory
-let globalScoreboardMode = true; 
+// DYNAMIC DEFAULT: Main slate starts collapsed (true), individual team pages start expanded (false)
+let globalScoreboardMode = window.TARGET_TEAM_ID ? false : true; 
 
 window.HAS_SHOWN_TUTORIAL = false;
 let allGamesData = {};
@@ -83,7 +83,7 @@ function updateUI() {
         filteredGames = filteredGames.filter(([id, g]) => g.home_id === targetTeamId || g.away_id === targetTeamId);
     }
 
-    // --- NEW SMART SORTING LOGIC ---
+    // --- SMART SORTING LOGIC ---
     filteredGames.sort((a, b) => {
         const gameA = a[1];
         const gameB = b[1];
@@ -144,8 +144,6 @@ window.toggleSingleCard = function(e, gameId) {
 window.toggleAllWeatherCards = function() {
     if (window.dismissTutorials) window.dismissTutorials();
     globalScoreboardMode = !globalScoreboardMode;
-    // We still save to localStorage so it remembers the state if they navigate between pages, 
-    // but a hard refresh will always reset to collapsed.
     localStorage.setItem('nflScoreboardMode', globalScoreboardMode);
     
     const btnText = document.getElementById('expand-toggle-text');
@@ -259,7 +257,7 @@ function createGameCard(gameId, game, isSingleTeam) {
     let weatherEmojiLine = isDome ? `Roof Closed 🌡️${w.temp}°` : `🌧️${w.precip}" 🌡️${w.temp}° 💨${w.windSpeed}mph`;
     if (isTooEarly) weatherEmojiLine = isDome ? `Roof Closed` : `🔭 Forecast pending...`;
 
-    // Because globalScoreboardMode defaults to true, this natively defaults to 'block' and 'none' (collapsed state)
+    // Cards will instantly respect the dynamic globalScoreboardMode on load
     const showRibbon = globalScoreboardMode ? 'block' : 'none';
     const showFull = globalScoreboardMode ? 'none' : 'block';
     
@@ -420,7 +418,6 @@ function renderGames(gamesArray, container, isSingleTeam) {
         
         let expandTutorialHtml = '';
         if (!window.HAS_SHOWN_TUTORIAL) {
-            // Positioned absolutely right above the Expand Cards button so it flawlessly points to it
             expandTutorialHtml = `
                 <div class="tutorial-tooltip text-primary fw-bold position-absolute w-100 text-center" style="bottom: 100%; left: 0; padding-bottom: 4px; font-size: 0.75rem; animation: tutorialBounce 1.5s infinite; white-space: nowrap; pointer-events: none;">
                     👇 Click to expand
