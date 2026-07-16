@@ -22,19 +22,19 @@ except FileNotFoundError:
 
 def fetch_open_meteo_hourly(lat, lon, game_iso_time):
     """
-    Fetches hourly weather forecasts and returns current kickoff weather 
-    plus a structured 4-hour window starting at kickoff.
+    Fetches hourly weather forecasts using strict GMT timezone (WeatherMLB Style)
+    to perfectly align the forecast window with the ESPN UTC kickoff time.
     """
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
         "latitude": lat,
         "longitude": lon,
         "current": "temperature_2m,wind_speed_10m,precipitation",
-        "hourly": "temperature_2m,precipitation_probability,weather_code",
+        "hourly": "temperature_2m,precipitation_probability,precipitation,weather_code",
         "temperature_unit": "fahrenheit",
         "wind_speed_unit": "mph",
         "precipitation_unit": "inch",
-        "timezone": "auto"
+        "timezone": "GMT" # <-- CRUCIAL FIX: Forces all time arrays to UTC
     }
     
     try:
@@ -44,41 +44,40 @@ def fetch_open_meteo_hourly(lat, lon, game_iso_time):
         
         data = response.json()
         current = data.get('current', {})
-        hourly = data.get('hourly', {})
-        times = hourly.get('time', [])
+        time_array = data.get('hourly', {}).get('time', [])
         
-        # Parse game time
+        # 1. Parse game time to strict UTC
         # ESPN sends e.g. "2026-09-10T20:20Z"
-        game_dt = datetime.datetime.fromisoformat(game_iso_time.replace("Z", "+00:00"))
+        utc_time = datetime.datetime.fromisoformat(game_iso_time.replace('Z', '+00:00'))
         
-        # Find the index closest to kickoff
-        start_idx = 0
-        min_diff = float('inf')
-        for idx, t_str in enumerate(times):
-            t_dt = datetime.datetime.fromisoformat(t_str).replace(tzinfo=datetime.timezone.utc)
-            diff = abs((t_dt - game_dt).total_seconds())
-            if diff < min_diff:
-                min_diff = diff
-                start_idx = idx
+        # 2. Strip minutes to match Open-Meteo's hourly GMT array format
+        target_time_str = utc_time.strftime('%Y-%m-%dT%H:00')
+        
+        # 3. Find the exact matching index in the forecast
+        try:
+            start_idx = time_array.index(target_time_str)
+        except ValueError:
+            start_idx = 0
 
-        # Format a 4-hour forecast window for the app's scrollable hourly bar
-        formatted_hourly = []
-        for i in range(start_idx, min(start_idx + 4, len(times))):
-            t_str = times[i]
-            code = hourly.get("weather_code", [0])[i]
+        # 4. Slice a 5-hour window: 1 hr before kickoff to 3 hrs after
+        actual_start = max(0, start_idx - 1)
+        actual_end = min(len(time_array), start_idx + 4)
+
+        hourly_slice = []
+        for i in range(actual_start, actual_end):
+            code = data['hourly'].get("weather_code", [0])[i]
             
             # WMO Weather Interpretation Codes
             is_thunder = code in [95, 96, 99]
             is_snow = code in [71, 73, 75, 77, 85, 86]
             
-            # Open-Meteo returns times as "YYYY-MM-DDTHH:MM" local. Convert to UTC ISO string
-            local_dt = datetime.datetime.fromisoformat(t_str)
-            utc_iso = local_dt.replace(tzinfo=datetime.timezone.utc).isoformat() + "Z"
-
-            formatted_hourly.append({
-                "timestamp": utc_iso,
-                "temp": int(hourly.get("temperature_2m", [72])[i]),
-                "precipChance": int(hourly.get("precipitation_probability", [0])[i]),
+            temp_val = data['hourly'].get("temperature_2m", [72])[i]
+            chance = data['hourly'].get("precipitation_probability", [0])[i]
+            
+            hourly_slice.append({
+                "timestamp": time_array[i] + "Z", # Appending Z tells JS this is UTC
+                "temp": int(temp_val) if temp_val is not None else "--",
+                "precipChance": chance if chance is not None else 0,
                 "isThunderstorm": is_thunder,
                 "isSnow": is_snow
             })
@@ -87,7 +86,7 @@ def fetch_open_meteo_hourly(lat, lon, game_iso_time):
             "temp": int(current.get('temperature_2m', 72)),
             "windSpeed": int(current.get('wind_speed_10m', 0)),
             "precip": round(float(current.get('precipitation', 0.0)), 2),
-            "hourly": formatted_hourly
+            "hourly": hourly_slice
         }
         
     except Exception as e:
@@ -101,18 +100,12 @@ def get_week_label(stype, wk):
     return f"Week {wk}"
 
 def get_current_nfl_week():
-    """
-    Directly targets the correct Season Type based on the calendar month.
-    July/Aug = Preseason (seasontype 1). Sept-Feb = Reg/Post (seasontype 2 or 3).
-    """
     now = datetime.datetime.now()
     season_year = now.year if now.month > 2 else now.year - 1
     
-    # If we are in July or August, explicitly force Preseason Week 1
     if now.month in [7, 8]:
         return 1, 1, season_year
         
-    # Otherwise, let ESPN tell us the current active Regular/Post season week
     try:
         base_url = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
         data = requests.get(base_url, timeout=10).json()
@@ -125,14 +118,10 @@ def get_current_nfl_week():
 def main():
     print("🏈 Fetching ESPN NFL Schedule & Weather...")
     
-    # 1. Grab the exact active week and season type
     current_season_type, current_week, season_year = get_current_nfl_week()
-
-    # 2. Calculate the "Next Week" for the UI toggle button
     next_season_type = current_season_type
     next_week = current_week + 1
 
-    # Handle the transition from Preseason to Regular Season
     if current_season_type == 1 and current_week >= 4:
         next_season_type = 2
         next_week = 1
@@ -140,7 +129,6 @@ def main():
         next_season_type = 3
         next_week = 1
 
-    # 3. Build the exact API URLs using the seasontype parameter
     fetches = [
         {
             "url": f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates={season_year}&seasontype={current_season_type}&week={current_week}",
@@ -171,10 +159,8 @@ def main():
             espn_venue = comp.get('venue', {})
             venue_id = str(espn_venue.get('id', ''))
             
-            # Look up the venue by its ID in our new venues database
             stadium_info = venues_dict.get(venue_id)
             
-            # Fallback if ESPN uses a new/unknown venue ID
             if not stadium_info:
                 print(f"⚠️ Unknown Venue ID {venue_id} detected for game {game_id}. Using API fallback data.")
                 is_indoor = espn_venue.get('indoor', False)
@@ -188,16 +174,13 @@ def main():
                     "lon": 0.0
                 }
             
-            # Fetch Weather
             weather_payload = {"temp": 72, "windSpeed": 0, "precip": 0, "hourly": []} 
             
-            # Fetch weather if it's an outdoor/retractable stadium and we have coordinates
-            if stadium_info['roof'] not in ["Dome"] and stadium_info['lat'] != 0.0:
+            if stadium_info['roof'] not in ["Dome", "Retractable"] and stadium_info['lat'] != 0.0:
                 api_weather = fetch_open_meteo_hourly(stadium_info['lat'], stadium_info['lon'], game_time)
                 if api_weather:
                     weather_payload = api_weather
-            else:
-                # Controlled indoor climate template
+            elif stadium_info['roof'] in ["Dome", "Retractable"]:
                 weather_payload = {
                     "temp": 70,
                     "windSpeed": 0,
@@ -205,7 +188,6 @@ def main():
                     "hourly": []
                 }
                 
-            # Parse Teams
             home_competitor = next((c for c in comp['competitors'] if c['homeAway'] == 'home'), None)
             away_competitor = next((c for c in comp['competitors'] if c['homeAway'] == 'away'), None)
             
@@ -227,7 +209,6 @@ def main():
                 "weather": weather_payload
             }
     
-    # 4. Push directly to Firebase
     if firebase_admin._apps:
         db.reference('nfl_weather').set(live_state)
         print(f"✅ Firebase updated successfully with {len(live_state)} games.")
