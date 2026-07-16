@@ -33,30 +33,51 @@ def get_week_label(stype, wk):
     elif stype == 3: return f"Postseason Week {wk}"
     return f"Week {wk}"
 
-def main():
-    print("🏈 Fetching ESPN NFL Schedule (Current & Next Week) & Weather...")
-    
-    # Dynamically determine the correct NFL season year. 
-    # (The NFL calendar year rolls over after March).
+def find_active_week():
     now = datetime.datetime.now()
     season_year = now.year if now.month > 3 else now.year - 1
     
-    # By forcing dates={season_year}, ESPN breaks out of the previous season's Super Bowl loop
-    base_url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates={season_year}"
+    url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates={season_year}"
+    
+    stype = 2
+    wk = 1
     try:
-        base_data = requests.get(base_url, timeout=10).json()
-    except Exception as e:
-        print(f"Failed to reach ESPN API: {e}")
-        return
+        data = requests.get(url, timeout=10).json()
+        stype = data.get('season', {}).get('type', 2)
+        wk = data.get('week', {}).get('number', 1)
+    except:
+        pass
 
-    # Dynamically determine the current week from ESPN's global state for the active year
-    current_season_type = base_data.get('season', {}).get('type', 1)
-    current_week = base_data.get('week', {}).get('number', 1)
+    # ESPN skips preseason in the summer and defaults to Reg Season Wk 1. 
+    # If it's July or August, manually scan preseason weeks to find the active one.
+    if stype == 2 and wk == 1 and now.month in [6, 7, 8]:
+        for p_week in range(1, 5):
+            p_url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates={season_year}&seasontype=1&week={p_week}"
+            try:
+                p_data = requests.get(p_url, timeout=5).json()
+                events = p_data.get('events', [])
+                # Return the first preseason week that has scheduled/live games
+                if events and any(e['status']['type']['state'] in ['pre', 'in'] for e in events):
+                    return 1, p_week
+            except:
+                continue
+        return 1, 1 # Fallback to preseason week 1
+        
+    return stype, wk
 
-    # Calculate next week (handling season transitions)
+def main():
+    print("🏈 Fetching ESPN NFL Schedule (Current & Next Week) & Weather...")
+    now = datetime.datetime.now()
+    season_year = now.year if now.month > 3 else now.year - 1
+
+    # 1. Smartly determine the actual active week
+    current_season_type, current_week = find_active_week()
+
+    # 2. Calculate the "Next Week" for the toggle button
     next_season_type = current_season_type
     next_week = current_week + 1
 
+    # Handle transitions (Preseason Week 4 -> Regular Season Week 1)
     if current_season_type == 1 and current_week >= 4:
         next_season_type = 2
         next_week = 1
