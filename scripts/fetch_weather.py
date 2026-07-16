@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+import datetime
 import firebase_admin
 from firebase_admin import credentials, db
 
@@ -35,15 +36,21 @@ def get_week_label(stype, wk):
 def main():
     print("🏈 Fetching ESPN NFL Schedule (Current & Next Week) & Weather...")
     
-    base_url = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
+    # Dynamically determine the correct NFL season year. 
+    # (The NFL calendar year rolls over after March).
+    now = datetime.datetime.now()
+    season_year = now.year if now.month > 3 else now.year - 1
+    
+    # By forcing dates={season_year}, ESPN breaks out of the previous season's Super Bowl loop
+    base_url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates={season_year}"
     try:
         base_data = requests.get(base_url, timeout=10).json()
     except Exception as e:
         print(f"Failed to reach ESPN API: {e}")
         return
 
-    # Dynamically determine the current week from ESPN's global state
-    current_season_type = base_data.get('season', {}).get('type', 2)
+    # Dynamically determine the current week from ESPN's global state for the active year
+    current_season_type = base_data.get('season', {}).get('type', 1)
     current_week = base_data.get('week', {}).get('number', 1)
 
     # Calculate next week (handling season transitions)
@@ -59,12 +66,12 @@ def main():
 
     fetches = [
         {
-            "url": f"{base_url}?seasontype={current_season_type}&week={current_week}",
+            "url": f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates={season_year}&seasontype={current_season_type}&week={current_week}",
             "label": get_week_label(current_season_type, current_week),
             "order": 1
         },
         {
-            "url": f"{base_url}?seasontype={next_season_type}&week={next_week}",
+            "url": f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates={season_year}&seasontype={next_season_type}&week={next_week}",
             "label": get_week_label(next_season_type, next_week),
             "order": 2
         }
@@ -89,7 +96,6 @@ def main():
             stadium_info = stadiums_dict.get(home_abbr, None)
             weather_data = {"temperature_2m": 72, "wind_speed_10m": 0, "precipitation": 0} 
             
-            # Fetch weather (Note: if the game is 14 days out, Open-Meteo returns defaults, which is safely handled)
             if stadium_info and stadium_info['roof'] != "Dome":
                 weather_data = fetch_open_meteo(stadium_info['lat'], stadium_info['lon'])
                 
