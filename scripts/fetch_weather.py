@@ -23,23 +23,18 @@ try:
 except FileNotFoundError:
     print("⚠️ data/venues.json not found! Proceeding with API fallbacks.")
 
-def fetch_weather_api_hourly(lat, lon, game_iso_time):
+# --- WEATHER API PROVIDERS ---
+
+def fetch_weather_api_hourly(lat, lon, game_iso_time, days_diff):
+    """WeatherAPI.com fetcher for high-accuracy near-term games (<= 3 days away)."""
     if not WEATHER_API_KEY:
         print("⚠️ WEATHER_API_KEY environment variable is missing!")
-        return {"status": "error", "temp": "--", "windSpeed": 0, "precip": 0, "hourly": []}
+        return None
 
-    # 1. Parse game time to strict UTC
     utc_time = datetime.datetime.fromisoformat(game_iso_time.replace('Z', '+00:00'))
-    
-    # 2. Check date limits
-    today_utc = datetime.datetime.now(datetime.timezone.utc).date()
-    days_diff = (utc_time.date() - today_utc).days
-
-    if days_diff > 14 or days_diff < 0:
-        return {"status": "too_early", "temp": "--", "windSpeed": 0, "precip": 0, "hourly": []}
 
     # WeatherAPI forecast days needed
-    req_days = max(3, min(14, days_diff + 2))
+    req_days = max(1, min(14, days_diff + 2))
     url = f"http://api.weatherapi.com/v1/forecast.json?key={WEATHER_API_KEY}&q={lat},{lon}&days={req_days}&aqi=no&alerts=no"
 
     try:
@@ -104,24 +99,116 @@ def fetch_weather_api_hourly(lat, lon, game_iso_time):
                 "isSnow": is_snow
             })
 
-        # Summary conditions for kickoff
         kickoff_hour = all_hours[start_idx] if len(all_hours) > start_idx else (all_hours[0] if all_hours else {})
         
-        temp_val = round(kickoff_hour.get('temp_f', 72))
-        wind_val = round(kickoff_hour.get('wind_mph', 0))
-        precip_val = round(float(kickoff_hour.get('precip_in', 0.0)), 2)
-
         return {
             "status": "ok",
-            "temp": temp_val,
-            "windSpeed": wind_val,
-            "precip": precip_val,
+            "temp": round(kickoff_hour.get('temp_f', 72)),
+            "windSpeed": round(kickoff_hour.get('wind_mph', 0)),
+            "precip": round(float(kickoff_hour.get('precip_in', 0.0)), 2),
             "hourly": hourly_slice
         }
         
     except Exception as e:
-        print(f"   ⚠️ Weather Fetch Error: {e}")
+        print(f"   ⚠️ WeatherAPI Fetch Error: {e}")
         return None
+
+def fetch_open_meteo_hourly(lat, lon, game_iso_time):
+    """Open-Meteo fetcher for games farther out (4 to 14 days away)."""
+    utc_time = datetime.datetime.fromisoformat(game_iso_time.replace('Z', '+00:00'))
+    
+    game_date_str = utc_time.strftime('%Y-%m-%d')
+    next_day = (utc_time + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+
+    url = "https://api.open-meteo.com/v1/forecast"
+    params = {
+        "latitude": lat,
+        "longitude": lon,
+        "current": "temperature_2m,wind_speed_10m,precipitation",
+        "hourly": "temperature_2m,precipitation_probability,precipitation,weather_code",
+        "temperature_unit": "fahrenheit",
+        "wind_speed_unit": "mph",
+        "precipitation_unit": "inch",
+        "timezone": "GMT",
+        "start_date": game_date_str,
+        "end_date": next_day
+    }
+    
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        if response.status_code != 200:
+            return None
+        
+        data = response.json()
+        current = data.get('current', {})
+        time_array = data.get('hourly', {}).get('time', [])
+        
+        target_time_str = utc_time.strftime('%Y-%m-%dT%H:00')
+        
+        try:
+            start_idx = time_array.index(target_time_str)
+        except ValueError:
+            start_idx = 1
+
+        actual_start = max(0, start_idx - 1)
+        actual_end = min(len(time_array), start_idx + 4)
+
+        hourly_slice = []
+        for i in range(actual_start, actual_end):
+            code = data['hourly'].get("weather_code", [0])[i]
+            is_thunder = code in [95, 96, 99]
+            is_snow = code in [71, 73, 75, 77, 85, 86]
+            
+            temp_val = data['hourly'].get("temperature_2m", [72])[i]
+            chance = data['hourly'].get("precipitation_probability", [0])[i]
+            
+            hourly_slice.append({
+                "timestamp": time_array[i] + "Z",
+                "temp": int(temp_val) if temp_val is not None else "--",
+                "precipChance": chance if chance is not None else 0,
+                "isThunderstorm": is_thunder,
+                "isSnow": is_snow
+            })
+            
+        target_temp = data['hourly'].get("temperature_2m", [72])[start_idx] if len(data['hourly'].get("temperature_2m", [])) > start_idx else current.get('temperature_2m', 72)
+
+        return {
+            "status": "ok",
+            "temp": int(target_temp) if target_temp is not None else 72,
+            "windSpeed": int(current.get('wind_speed_10m', 0)),
+            "precip": round(float(current.get('precipitation', 0.0)), 2),
+            "hourly": hourly_slice
+        }
+        
+    except Exception as e:
+        print(f"   ⚠️ Open-Meteo Fetch Error: {e}")
+        return None
+
+def fetch_game_weather(lat, lon, game_iso_time):
+    """Hybrid Router: WeatherAPI for <= 3 days, Open-Meteo for > 3 days."""
+    utc_time = datetime.datetime.fromisoformat(game_iso_time.replace('Z', '+00:00'))
+    today_utc = datetime.datetime.now(datetime.timezone.utc).date()
+    days_diff = (utc_time.date() - today_utc).days
+
+    if days_diff > 14 or days_diff < 0:
+        return {"status": "too_early", "temp": "--", "windSpeed": 0, "precip": 0, "hourly": []}
+
+    # 🎯 <= 3 Days Away: WeatherAPI.com
+    if days_diff <= 3:
+        weather = fetch_weather_api_hourly(lat, lon, game_iso_time, days_diff)
+        if weather:
+            return weather
+        print("   ⚠️ WeatherAPI failed, falling back to Open-Meteo...")
+        return fetch_open_meteo_hourly(lat, lon, game_iso_time)
+
+    # 🔭 > 3 Days Away: Open-Meteo
+    else:
+        weather = fetch_open_meteo_hourly(lat, lon, game_iso_time)
+        if weather:
+            return weather
+        return {"status": "error", "temp": "--", "windSpeed": 0, "precip": 0, "hourly": []}
+
+# --- MAIN LOGIC ---
 
 def get_week_label(stype, wk):
     if stype == 1: return f"Preseason Week {wk}"
@@ -146,7 +233,7 @@ def get_current_nfl_week():
         return 2, 1, season_year
 
 def main():
-    print("🏈 Fetching ESPN NFL Schedule & Weather...")
+    print("🏈 Fetching ESPN NFL Schedule & Weather (Hybrid Router)...")
     
     current_season_type, current_week, season_year = get_current_nfl_week()
     next_season_type = current_season_type
@@ -205,7 +292,7 @@ def main():
             weather_payload = {"status": "ok", "temp": 72, "windSpeed": 0, "precip": 0, "hourly": []} 
             
             if stadium_info['roof'] not in ["Dome", "Retractable"] and stadium_info['lat'] != 0.0:
-                api_weather = fetch_weather_api_hourly(stadium_info['lat'], stadium_info['lon'], game_time)
+                api_weather = fetch_game_weather(stadium_info['lat'], stadium_info['lon'], game_time)
                 if api_weather:
                     weather_payload = api_weather
             elif stadium_info['roof'] in ["Dome", "Retractable"]:
