@@ -26,4 +26,5 @@ jobs:
       - name: Push to Firebase
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
         run: python scripts/fetch_weather.py
