@@ -260,13 +260,37 @@ def get_current_nfl_schedule(venues_dict):
     schedule_url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates={season_year}&seasontype={stype}&week={wk}"
     
     games_list = []
-    try:
-        res_data = requests.get(schedule_url, timeout=10).json()
-        events = res_data.get('events', [])
-        
-        for event in events:
-            game_id = event['id']
-            comp = event['competitions'][0]
+        try:
+            res_data = requests.get(schedule_url, timeout=10).json()
+            events = res_data.get('events', [])
+            
+            # --- GAME DAY FREQUENCY CHECK ---
+            import zoneinfo
+            import sys
+            
+            est_tz = zoneinfo.ZoneInfo("America/New_York")
+            now_est = datetime.datetime.now(est_tz)
+            
+            is_game_day = False
+            for event in events:
+                game_time = event['date']
+                g_dt = datetime.datetime.fromisoformat(game_time.replace('Z', '+00:00')).astimezone(est_tz)
+                if g_dt.date() == now_est.date():
+                    is_game_day = True
+                    break
+                    
+            if not is_game_day:
+                # Only execute if the current minute is near the 0, 15, 30, or 45 mark (accounts for slight GitHub Action delays)
+                if now_est.minute % 15 >= 5:
+                    print(f"💤 Non-game day. Time is {now_est.strftime('%I:%M %p')} EST. Skipping run to enforce 15-minute interval.")
+                    sys.exit(0)
+            else:
+                print(f"🏈 Game Day Detected! Executing 5-minute update cycle for {week_label}.")
+            # --------------------------------
+            
+            for event in events:
+                game_id = event['id']
+                comp = event['competitions'][0]
             game_time = event['date']
             
             espn_venue = comp.get('venue', {})
