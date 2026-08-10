@@ -540,7 +540,7 @@ MAIN_SITE_TEMPLATE = """<!DOCTYPE html>
     <link rel="manifest" href="/site.webmanifest">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFL Weather & Stadium Conditions | Live Fantasy & Betting Impacts</title>
+    <title>{week_label} NFL Weather & Stadium Conditions | Live Fantasy & Betting Impacts</title>
     <meta name="description" content="Live NFL weather forecasts, wind speeds, turf conditions, and stadium roof status for {week_label}. Optimize your fantasy football and DFS lineups.">
     <meta name="keywords" content="NFL weather, fantasy football weather, DFS weather, NFL stadium turf, NFL betting conditions, live wind speed NFL">
     <link rel="canonical" href="https://weathernfl.com/">
@@ -742,6 +742,10 @@ TEAM_PAGE_TEMPLATE = """<!DOCTYPE html>
     </nav>
     
     <div class="main-container">
+        <div class="text-center mt-3 mb-3">
+            <h1 class="h4 fw-bold text-dark mb-1">{team_name} Weather Forecast</h1>
+            <p class="text-muted mb-0" style="font-size: 0.85rem;">{stadium_name}</p>
+        </div>
         <div id="team-weather-container">
             {team_card_content}
         </div>
