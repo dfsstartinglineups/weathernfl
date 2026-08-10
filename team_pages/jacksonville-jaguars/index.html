@@ -1,57 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-QYCQBXBBJ7"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-QYCQBXBBJ7');
     </script>
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jacksonville Jaguars @ New Orleans Saints Weather Forecast at Caesars Superdome | Rain & Wind Forecast</title>
+    <title>Jacksonville Jaguars Game Weather at EverBank Stadium | Rain & Wind Forecast</title>
     
-    <meta name="description" content="View the live weather forecast for the Jacksonville Jaguars @ New Orleans Saints game at Caesars Superdome. Track real-time rain delay risks, stadium wind direction, hourly temperatures, and betting odds.">
-    <meta name="keywords" content="Jacksonville Jaguars weather, Caesars Superdome wind direction, Caesars Superdome rain delay, Jacksonville Jaguars game weather today, fantasy football weather, NFL weather">
+    <meta name="description" content="View the live weather forecast for the Jacksonville Jaguars game at EverBank Stadium. Track real-time rain delay risks, stadium wind direction, hourly temperatures, and betting odds.">
+    <meta name="keywords" content="Jacksonville Jaguars weather, EverBank Stadium wind direction, EverBank Stadium rain delay, Jacksonville Jaguars game weather today, fantasy football weather, NFL weather">
     <link rel="canonical" href="https://weathernfl.com/team_pages/jacksonville-jaguars/" />
     
-    <!-- OpenGraph / Social Meta -->
-    <meta property="og:title" content="Jacksonville Jaguars @ New Orleans Saints Game Weather at Caesars Superdome - Weather NFL">
-    <meta property="og:description" content="Track stadium wind, hourly rain risks, and weather impact analytics for the Jacksonville Jaguars @ New Orleans Saints game at Caesars Superdome.">
+    <meta property="og:title" content="Jacksonville Jaguars Game Weather at EverBank Stadium - Weather NFL">
+    <meta property="og:description" content="Track stadium wind, hourly rain risks, and weather impact analytics for the Jacksonville Jaguars game at EverBank Stadium.">
     <meta property="og:url" content="https://weathernfl.com/team_pages/jacksonville-jaguars/">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://weathernfl.com/social-share.png">
     
-    <!-- Comprehensive Twitter Meta Tags (Compact Summary Mode) -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@weathernfldaily">
     <meta name="twitter:creator" content="@weathernfldaily">
-    <meta name="twitter:title" content="Jacksonville Jaguars @ New Orleans Saints Game Weather at Caesars Superdome - Weather NFL">
-    <meta name="twitter:description" content="Track stadium wind, hourly rain risks, and weather impact analytics for the Jacksonville Jaguars @ New Orleans Saints game at Caesars Superdome.">
+    <meta name="twitter:title" content="Jacksonville Jaguars Game Weather at EverBank Stadium - Weather NFL">
+    <meta name="twitter:description" content="Track stadium wind, hourly rain risks, and weather impact analytics for the Jacksonville Jaguars game at EverBank Stadium.">
     <meta name="twitter:image" content="https://weathernfl.com/social-share.png">
     
     <script type="application/ld+json">
 {
     "@context": "https://schema.org",
     "@type": "SportsEvent",
-    "name": "Jacksonville Jaguars @ New Orleans Saints Game",
+    "name": "Jacksonville Jaguars Home Game",
     "location": {
         "@type": "Place",
-        "name": "Caesars Superdome",
-        "address": "New Orleans, LA"
+        "name": "EverBank Stadium",
+        "address": "EverBank Stadium"
     }
 }
     </script>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     
     <style>
         body { background-color: #f8f9fa; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; } 
@@ -62,16 +54,13 @@
         .wind-badge { font-size: 0.85rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; display: inline-block; }
         .analysis-box { background-color: rgba(255, 255, 255, 0.6); border-left: 4px solid #0d6efd; padding: 8px 12px; margin-top: 12px; font-size: 0.8rem; color: #495057; line-height: 1.4; border-radius: 0 4px 4px 0; }
         .analysis-title { font-weight: 800; text-transform: uppercase; font-size: 0.7rem; color: #0d6efd; display: block; margin-bottom: 4px; letter-spacing: 0.5px; }
-        
-        /* Hourly Forecast CSS */
         .hourly-scroll-container { display: flex; overflow-x: auto; gap: 8px; padding: 8px 4px; margin-top: 8px; border-top: 1px solid rgba(0,0,0,0.05); scrollbar-width: thin; }
         .hour-card { display: flex; flex: 1; flex-direction: column; align-items: center; min-width: 60px; text-align: center; }
         .hour-time { font-size: 0.75rem; font-weight: 600; color: #6c757d; margin-bottom: 2px; }
         .hour-icon { font-size: 1.3rem; line-height: 1; margin-bottom: 2px; }
         .hour-pop { font-size: 0.65rem; color: #5ac8fa; font-weight: 700; line-height: 1; height: 12px; margin-bottom: 2px; }
         .hour-temp { font-size: 0.85rem; font-weight: 600; color: #212529; line-height: 1; }
-        
-        /* Flowing Weather Gradients */
+
         @keyframes weather-flow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         .bg-weather-sunny { background: linear-gradient(-45deg, #e3f2fd, #e1f5fe, #f1f8e9); background-size: 300% 300%; animation: weather-flow 15s ease infinite; }
         .bg-weather-cloudy { background: linear-gradient(-45deg, #f5f5f5, #e0e0e0, #eeeeee); background-size: 300% 300%; animation: weather-flow 20s ease infinite; }
@@ -91,7 +80,7 @@
             <div class="d-flex align-items-center gap-2">
                 <select id="team-nav-select" class="form-select form-select-sm fw-bold" style="background-color: #1e293b; color: #adb5bd; border: 1px solid #334155; cursor: pointer; max-width: 180px;" onchange="if(this.value) window.location.href=this.value;">
                     <option value="">Switch Team</option>
-                    <option value="/team_pages/arizona-cardinals/">Arizona Cardinals</option>
+                                        <option value="/team_pages/arizona-cardinals/">Arizona Cardinals</option>
                     <option value="/team_pages/atlanta-falcons/">Atlanta Falcons</option>
                     <option value="/team_pages/baltimore-ravens/">Baltimore Ravens</option>
                     <option value="/team_pages/buffalo-bills/">Buffalo Bills</option>
@@ -123,7 +112,6 @@
                     <option value="/team_pages/tampa-bay-buccaneers/">Tampa Bay Buccaneers</option>
                     <option value="/team_pages/tennessee-titans/">Tennessee Titans</option>
                     <option value="/team_pages/washington-commanders/">Washington Commanders</option>
-
                 </select>
                 <a href="/" class="btn btn-sm btn-outline-light px-3 fw-bold" style="font-size: 0.75rem;">
                     Full Slate
@@ -134,10 +122,17 @@
     
     <div class="main-container">
         <div id="team-weather-container">
-            <div class="text-center p-5 text-muted">
-                <div class="spinner-border spinner-border-sm text-primary me-2"></div>
-                Loading Jacksonville Jaguars forecast...
-            </div>
+            
+    <div class="w-100 mb-3">
+        <div class="card p-4 text-center border rounded bg-white shadow-sm">
+            <h5 class="fw-bold text-dark mb-2">🏈 Bye Week / Off Week</h5>
+            <p class="text-muted mb-0" style="font-size: 0.9rem;">
+                The <b>Jacksonville Jaguars</b> do not have a game scheduled for this week.
+            </p>
+            <p class="text-muted small mt-2 mb-0">Home Venue: EverBank Stadium</p>
+        </div>
+    </div>
+    
         </div>
     </div>
     
@@ -156,16 +151,23 @@
         </div>
     </div>
     
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        window.TARGET_TEAM_ID = "JAX";
         document.addEventListener("DOMContentLoaded", () => {
             const selectMenu = document.getElementById("team-nav-select");
             if (selectMenu) {
                 selectMenu.value = `/team_pages/jacksonville-jaguars/`;
             }
         });
+        function showRadar(url, venueName) {
+            const modalElement = document.getElementById('radarModal');
+            const modalTitle = document.querySelector('#radarModal .modal-title');
+            const iframe = document.getElementById('radarFrame');
+            if (modalTitle) modalTitle.innerText = `Radar: ${venueName}`;
+            const myModal = bootstrap.Modal.getOrCreateInstance(modalElement);
+            if (iframe) iframe.src = url;
+            myModal.show();
+        }
     </script>
-    <script src="../../js/app.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
