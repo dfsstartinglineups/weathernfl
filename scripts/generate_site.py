@@ -791,18 +791,43 @@ TEAM_PAGE_TEMPLATE = """<!DOCTYPE html>
 # ==========================================
 # 7. SITEMAP & INDEXNOW GENERATOR
 # ==========================================
-def generate_sitemap(now_iso):
-    urls = ["https://weathernfl.com/"]
+def write_if_changed(filepath, new_content):
+    """Compares new HTML against existing HTML. Writes and returns True only if changed."""
+    if os.path.exists(filepath):
+        with open(filepath, 'r', encoding='utf-8') as f:
+            old_content = f.read()
+        if old_content == new_content:
+            return False
+            
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write(new_content)
+    return True
+def generate_sitemap(changed_urls):
+    urls_with_paths = [
+        ("https://weathernfl.com/", MAIN_INDEX_FILE)
+    ]
     for team in sorted(NFL_TEAMS, key=lambda x: x["name"]):
-        urls.append(f"https://weathernfl.com/team_pages/{team['slug']}/")
+        urls_with_paths.append((
+            f"https://weathernfl.com/team_pages/{team['slug']}/",
+            os.path.join(TEAM_PAGES_DIR, team['slug'], "index.html")
+        ))
 
     sitemap_entries = []
-    for i, url in enumerate(urls):
+    for i, (url, filepath) in enumerate(urls_with_paths):
         priority = "1.0" if i == 0 else "0.8"
+        
+        # Extract the real OS-level modification time for accurate SEO timestamps
+        if os.path.exists(filepath):
+            mtime = os.path.getmtime(filepath)
+            dt = datetime.datetime.fromtimestamp(mtime, timezone.utc)
+            lastmod = dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+        else:
+            lastmod = datetime.datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+
         sitemap_entries.append(
             f"  <url>\n"
             f"    <loc>{url}</loc>\n"
-            f"    <lastmod>{now_iso}</lastmod>\n"
+            f"    <lastmod>{lastmod}</lastmod>\n"
             f"    <changefreq>hourly</changefreq>\n"
             f"    <priority>{priority}</priority>\n"
             f"  </url>"
@@ -817,22 +842,25 @@ def generate_sitemap(now_iso):
 
     with open(SITEMAP_FILE, 'w', encoding='utf-8') as f:
         f.write(sitemap_xml)
-    print("✅ Generated sitemap.xml with current ISO timestamp!")
+    print("✅ Generated sitemap.xml using actual file modification dates!")
 
-    # Ping IndexNow
+    # Ping IndexNow only with URLs that actually changed
+    if not changed_urls:
+        print("ℹ️ No HTML changes detected. Skipping IndexNow ping.")
+        return
+
     indexnow_key = "3da3e81feb6d41e69defd45253bbe4dc"
     payload = {
         "host": "weathernfl.com",
         "key": indexnow_key,
         "keyLocation": f"https://weathernfl.com/{indexnow_key}.txt",
-        "urlList": urls
+        "urlList": changed_urls
     }
     
     try:
-        import requests
         res = requests.post("https://api.indexnow.org/indexnow", json=payload, timeout=10)
         if res.status_code in [200, 202]:
-            print(f"🚀 Successfully pinged IndexNow with {len(urls)} URLs!")
+            print(f"🚀 Successfully pinged IndexNow with {len(changed_urls)} modified URLs!")
         else:
             print(f"⚠️ IndexNow ping failed: {res.status_code} - {res.text}")
     except Exception as e:
@@ -859,6 +887,9 @@ def main():
     sorted_teams = sorted(NFL_TEAMS, key=lambda x: x["name"])
     select_options = "\n".join([f'                    <option value="/team_pages/{t["slug"]}/">{t["name"]}</option>' for t in sorted_teams])
 
+    # Track which URLs actually received new HTML
+    changed_urls = []
+
     # Step 3: Render Main index.html
     main_cards_html = []
     if games:
@@ -880,9 +911,11 @@ def main():
         cards_content=cards_content
     )
 
-    with open(MAIN_INDEX_FILE, 'w', encoding='utf-8') as f:
-        f.write(main_html)
-    print("✅ Main index.html rendered successfully!")
+    if write_if_changed(MAIN_INDEX_FILE, main_html):
+        changed_urls.append("https://weathernfl.com/")
+        print("✅ Main index.html updated.")
+    else:
+        print("⏭️ Main index.html unchanged. Skipped write.")
 
     # Step 4: Render All 32 Team Pages
     for team in NFL_TEAMS:
@@ -890,7 +923,6 @@ def main():
         team_name = team["name"]
         team_slug = team["slug"]
 
-        # Check if team is playing in the current week
         target_game = None
         for g in games:
             h_id = g['home_id'].upper()
@@ -915,7 +947,6 @@ def main():
             schema_name = f"{matchup_title} Game"
             schema_address = f"{stadium_city}, {stadium_state}"
         else:
-            # Bye week / Off week: Prevents 404
             stadium_name = team['stadium']
             card_markup = render_bye_card(team_name, stadium_name)
 
@@ -954,13 +985,14 @@ def main():
         team_dir = os.path.join(TEAM_PAGES_DIR, team_slug)
         os.makedirs(team_dir, exist_ok=True)
         
-        with open(os.path.join(team_dir, "index.html"), "w", encoding="utf-8") as f:
-            f.write(team_html)
+        output_filepath = os.path.join(team_dir, "index.html")
+        if write_if_changed(output_filepath, team_html):
+            changed_urls.append(f"https://weathernfl.com/team_pages/{team_slug}/")
 
-    print("🚀 Pre-rendered all 32 team index.html pages (Bye week fallback active, Zero 404s)!")
+    print(f"🚀 HTML parsing complete. {len(changed_urls)} pages required updates.")
 
-    # Step 5: Build sitemap.xml
-    generate_sitemap(now_iso)
+    # Step 5: Build sitemap.xml and Ping
+    generate_sitemap(changed_urls)
     print("🎉 Static site generation pipeline complete!")
 
 if __name__ == "__main__":
