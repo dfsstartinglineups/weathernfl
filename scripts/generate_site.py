@@ -785,7 +785,7 @@ TEAM_PAGE_TEMPLATE = """<!DOCTYPE html>
 """
 
 # ==========================================
-# 7. SITEMAP GENERATOR
+# 7. SITEMAP & INDEXNOW GENERATOR
 # ==========================================
 def generate_sitemap(now_iso):
     urls = ["https://weathernfl.com/"]
@@ -814,6 +814,25 @@ def generate_sitemap(now_iso):
     with open(SITEMAP_FILE, 'w', encoding='utf-8') as f:
         f.write(sitemap_xml)
     print("✅ Generated sitemap.xml with current ISO timestamp!")
+
+    # Ping IndexNow
+    indexnow_key = "3da3e81feb6d41e69defd45253bbe4dc"
+    payload = {
+        "host": "weathernfl.com",
+        "key": indexnow_key,
+        "keyLocation": f"https://weathernfl.com/{indexnow_key}.txt",
+        "urlList": urls
+    }
+    
+    try:
+        import requests
+        res = requests.post("https://api.indexnow.org/indexnow", json=payload, timeout=10)
+        if res.status_code in [200, 202]:
+            print(f"🚀 Successfully pinged IndexNow with {len(urls)} URLs!")
+        else:
+            print(f"⚠️ IndexNow ping failed: {res.status_code} - {res.text}")
+    except Exception as e:
+        print(f"⚠️ IndexNow ping exception: {e}")
 
 # ==========================================
 # 8. MAIN CONTROLLER PIPELINE
