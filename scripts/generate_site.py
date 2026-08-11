@@ -108,7 +108,11 @@ def fetch_weather_api_hourly(lat, lon, game_iso_time, days_diff):
             all_hours.extend(day.get('hour', []))
             
         target_epoch = int(utc_time.replace(minute=0, second=0, microsecond=0).timestamp())
-        start_idx = next((i for i, h in enumerate(all_hours) if h['time_epoch'] == target_epoch), 0)
+        
+        # Search for exact hour. If missing (due to API day limits), return None to force fallback.
+        start_idx = next((i for i, h in enumerate(all_hours) if h['time_epoch'] == target_epoch), None)
+        if start_idx is None:
+            return None
 
         actual_start = max(0, start_idx - 1)
         actual_end = min(len(all_hours), start_idx + 4)
