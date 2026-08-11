@@ -5,6 +5,10 @@ import re
 import requests
 import datetime
 from datetime import timezone, timedelta
+import zoneinfo
+
+
+EST_TZ = zoneinfo.ZoneInfo("America/New_York")
 
 # ==========================================
 # 1. PATH CONFIGURATION & MASTER DATA
@@ -417,7 +421,7 @@ def render_game_card(game, is_single_team=False):
     status_state = game.get('status', 'pre')
 
     if status_state == 'pre' and game.get('game_time'):
-        dt = datetime.datetime.fromisoformat(game['game_time'].replace('Z', '+00:00'))
+        dt = datetime.datetime.fromisoformat(game['game_time'].replace('Z', '+00:00')).astimezone(EST_TZ)
         badge_text = dt.strftime("%a %I:%M %p").replace(" 0", " ")
     elif status_state == 'in':
         badge_text = game.get('clock', 'LIVE')
@@ -458,7 +462,7 @@ def render_game_card(game, is_single_team=False):
             hours_markup = []
             for h in w['hourly'][:5]:
                 ts = h.get('timestamp')
-                dt = datetime.datetime.fromisoformat(ts.replace('Z', '+00:00')) if ts else datetime.datetime.now()
+                dt = datetime.datetime.fromisoformat(ts.replace('Z', '+00:00')).astimezone(EST_TZ) if ts else datetime.datetime.now(EST_TZ)
                 hr12 = dt.strftime("%I%p").lstrip("0")
                 is_night = dt.hour >= 20 or dt.hour < 6
                 
@@ -526,6 +530,7 @@ def render_game_card(game, is_single_team=False):
     </div>
     """
 
+    
 def render_bye_card(team_name, stadium_name):
     return f"""
     <div class="w-100 mb-3">
