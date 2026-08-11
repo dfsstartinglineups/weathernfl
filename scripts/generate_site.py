@@ -388,7 +388,7 @@ def generate_matchup_analysis(w, is_dome):
 
     # Trigger severe weather alerts
     if is_thunderstorm:
-        notes.append("⚡ <b>Lightning Risk:</b> Thunderstorms in the area. High probability of in-game weather delays.")
+        notes.append("⚡ <b>Lightning Risk:</b> Thunderstorms in the area. Possibility of in-game weather delays.")
     if is_snow:
         notes.append("🌨️ <b>Snow Conditions:</b> Slippery footing, reduced visibility, and tough kicking conditions. Expect a run-heavy script.")
 
