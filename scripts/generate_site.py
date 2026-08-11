@@ -518,27 +518,58 @@ def render_game_card(game, is_single_team=False):
 
     col_class = "w-100 mb-3" if is_single_team else "col-md-6 col-lg-4 col-xl-3 mb-3 px-1"
     
+    # Default State Logic
+    show_ribbon = "none" if is_single_team else "block"
+    show_full = "block" if is_single_team else "none"
+    
     return f"""
     <div class="{col_class}" id="game-{game['game_id']}">
         <div class="card game-card shadow-sm {border_class} {bg_class}" style="overflow: hidden;">
-            <div class="card-body px-2 pt-2 pb-2"> 
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="badge {badge_style}">{badge_text}</span>
-                    <span class="stadium-name text-truncate text-end flex-grow-1 ms-2" style="font-size: 0.8rem; font-weight: 600;">{stadium_name}</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center px-1 mb-1">
-                    <div class="d-flex align-items-center text-truncate" style="width: 45%; min-width: 0;"> 
-                        <img src="{away_logo}" class="me-2" style="width: 24px; height: 24px; object-fit: contain;" onerror="this.style.display='none'">
-                        <div class="fw-bold lh-sm text-dark text-truncate" style="font-size: 0.95rem;">{away_short}</div>
-                    </div>
-                    <div class="text-center text-muted fw-bold" style="width: 10%; font-size: 0.8rem;">@</div>
-                    <div class="d-flex align-items-center justify-content-end text-truncate" style="width: 45%; min-width: 0;"> 
-                        <img src="{home_logo}" class="me-2" style="width: 24px; height: 24px; object-fit: contain;" onerror="this.style.display='none'">
-                        <div class="fw-bold lh-sm text-dark text-truncate text-end" style="font-size: 0.95rem;">{home_short}</div>
+            
+            <!-- RIBBON VIEW -->
+            <div class="ribbon-view p-2 position-relative" onclick="toggleSingleCard(event, '{game['game_id']}')" style="cursor: pointer; display: {show_ribbon};">
+                <div class="d-flex align-items-center mb-1">
+                    <span class="badge {badge_style} flex-shrink-0 px-2 py-1" style="font-size: 0.65rem;">{badge_text}</span>
+                    <div class="fw-bold text-dark text-center flex-grow-1 ms-2" style="font-size: 0.75rem; letter-spacing: 0.2px;">
+                        {weather_emoji_line}
                     </div>
                 </div>
-                {weather_section}
+                <div class="d-flex align-items-center mt-1" style="gap: 4px;">
+                    <div class="d-flex align-items-center flex-shrink-0" style="gap: 3px;">
+                        <img src="{away_logo}" style="width: 16px; height: 16px; object-fit: contain;" onerror="this.style.display='none'">
+                        <span class="fw-bold text-dark lh-1" style="font-size: 0.75rem;">{away_short}</span>
+                    </div>
+                    <span class="fw-bold text-muted flex-shrink-0 lh-1" style="font-size: 0.7rem;">@</span>
+                    <div class="d-flex align-items-center flex-shrink-0" style="gap: 3px;">
+                        <img src="{home_logo}" style="width: 16px; height: 16px; object-fit: contain;" onerror="this.style.display='none'">
+                        <span class="fw-bold text-dark lh-1" style="font-size: 0.75rem;">{home_short}</span>
+                    </div>
+                    <div class="text-truncate text-end fw-bold flex-grow-1 ms-1" style="font-size: 0.7rem; opacity: 0.75;">{stadium_name}</div>
+                </div>
             </div>
+
+            <!-- FULL CARD VIEW -->
+            <div class="full-card-view" onclick="toggleSingleCard(event, '{game['game_id']}')" style="cursor: pointer; display: {show_full};">
+                <div class="card-body px-2 pt-2 pb-2"> 
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge {badge_style}">{badge_text}</span>
+                        <span class="stadium-name text-truncate text-end flex-grow-1 ms-2" style="font-size: 0.8rem; font-weight: 600;">{stadium_name}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center px-1 mb-1">
+                        <div class="d-flex align-items-center text-truncate" style="width: 45%; min-width: 0;"> 
+                            <img src="{away_logo}" class="me-2" style="width: 24px; height: 24px; object-fit: contain;" onerror="this.style.display='none'">
+                            <div class="fw-bold lh-sm text-dark text-truncate" style="font-size: 0.95rem;">{away_short}</div>
+                        </div>
+                        <div class="text-center text-muted fw-bold" style="width: 10%; font-size: 0.8rem;">@</div>
+                        <div class="d-flex align-items-center justify-content-end text-truncate" style="width: 45%; min-width: 0;"> 
+                            <img src="{home_logo}" class="me-2" style="width: 24px; height: 24px; object-fit: contain;" onerror="this.style.display='none'">
+                            <div class="fw-bold lh-sm text-dark text-truncate text-end" style="font-size: 0.95rem;">{home_short}</div>
+                        </div>
+                    </div>
+                    {weather_section}
+                </div>
+            </div>
+
         </div>
     </div>
     """
@@ -610,7 +641,7 @@ MAIN_SITE_TEMPLATE = """<!DOCTYPE html>
     <style>
         body {{ background-color: #f8f9fa; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }} 
         .main-container {{ max-width: 1200px; margin: 30px auto; padding: 0 15px; }}
-        .game-card {{ border: 1px solid #dee2e6; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; overflow: hidden; }}
+        .game-card {{ border: 1px solid #dee2e6; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; overflow: hidden; transition: transform 0.2s; }}
         .weather-row {{ font-size: 0.9rem; border-top: 1px solid #f1f3f5; padding-top: 8px; margin-top: 8px; padding-bottom: 4px; }}
         .stadium-name {{ color: #6c757d; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }}
         .wind-badge {{ font-size: 0.85rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; display: inline-block; }}
@@ -652,12 +683,19 @@ MAIN_SITE_TEMPLATE = """<!DOCTYPE html>
     </nav>
 
     <div class="main-container">
-        <div class="text-center mb-3">
+        <div class="text-center mb-2">
             <h1 class="fw-bold h2 mb-1">Live NFL Weather & Stadium Conditions</h1>
             <div class="fw-bold text-secondary mb-2" style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">
                 📅 {week_label}
             </div>
-            <p class="text-muted" style="font-size: 0.85rem;">Tracking wind, rain, and turf impacts for fantasy and betting.</p>
+            <p class="text-muted mb-3" style="font-size: 0.85rem;">Tracking wind, rain, and turf impacts for fantasy and betting.</p>
+            
+            <div class="d-flex justify-content-center mb-3">
+                <button class="btn btn-sm shadow-sm fw-bold px-4 py-1 border border-secondary" style="background-color: #fff; color: #495057; border-radius: 20px;" onclick="toggleAllWeatherCards()">
+                    <span id="expand-toggle-icon">▼</span> 
+                    <span id="expand-toggle-text">Expand All Cards</span>
+                </button>
+            </div>
         </div>
         
         <div id="games-container" class="row">
@@ -682,6 +720,44 @@ MAIN_SITE_TEMPLATE = """<!DOCTYPE html>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+    let globalScoreboardMode = true;
+
+    function toggleSingleCard(e, gameId) {{
+        if (e && e.target.closest('a, button, input, label, select')) return; 
+        const card = document.getElementById(`game-${{gameId}}`);
+        if (!card) return;
+        
+        const ribbon = card.querySelector('.ribbon-view');
+        const full = card.querySelector('.full-card-view');
+        
+        if (ribbon.style.display === 'none') {{
+            ribbon.style.display = 'block';
+            full.style.display = 'none';
+        }} else {{
+            ribbon.style.display = 'none';
+            full.style.display = 'block';
+        }}
+    }}
+
+    function toggleAllWeatherCards() {{
+        globalScoreboardMode = !globalScoreboardMode;
+        const btnText = document.getElementById('expand-toggle-text');
+        const btnIcon = document.getElementById('expand-toggle-icon');
+        if (btnText && btnIcon) {{
+            btnText.innerText = globalScoreboardMode ? 'Expand All Cards' : 'Collapse All Cards';
+            btnIcon.innerText = globalScoreboardMode ? '▼' : '▲';
+        }}
+        
+        document.querySelectorAll('.game-card').forEach(card => {{
+            const ribbon = card.querySelector('.ribbon-view');
+            const full = card.querySelector('.full-card-view');
+            if (ribbon && full) {{
+                ribbon.style.display = globalScoreboardMode ? 'block' : 'none';
+                full.style.display = globalScoreboardMode ? 'none' : 'block';
+            }}
+        }});
+    }}
+
     function showRadar(url, venueName) {{
         const modalElement = document.getElementById('radarModal');
         const modalTitle = document.querySelector('#radarModal .modal-title');
@@ -737,7 +813,7 @@ TEAM_PAGE_TEMPLATE = """<!DOCTYPE html>
     <style>
         body {{ background-color: #f8f9fa; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }} 
         .main-container {{ max-width: 520px; margin: 30px auto; padding: 0 15px; }}
-        .game-card {{ border: 1px solid #dee2e6; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; overflow: hidden; }}
+        .game-card {{ border: 1px solid #dee2e6; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; overflow: hidden; transition: transform 0.2s; }}
         .weather-row {{ font-size: 0.9rem; border-top: 1px solid #f1f3f5; padding-top: 8px; margin-top: 8px; padding-bottom: 4px; }}
         .stadium-name {{ color: #6c757d; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }}
         .wind-badge {{ font-size: 0.85rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; display: inline-block; }}
@@ -811,6 +887,24 @@ TEAM_PAGE_TEMPLATE = """<!DOCTYPE html>
                 selectMenu.value = `/team_pages/{team_slug}/`;
             }}
         }});
+        
+        function toggleSingleCard(e, gameId) {{
+            if (e && e.target.closest('a, button, input, label, select')) return; 
+            const card = document.getElementById(`game-${{gameId}}`);
+            if (!card) return;
+            
+            const ribbon = card.querySelector('.ribbon-view');
+            const full = card.querySelector('.full-card-view');
+            
+            if (ribbon.style.display === 'none') {{
+                ribbon.style.display = 'block';
+                full.style.display = 'none';
+            }} else {{
+                ribbon.style.display = 'none';
+                full.style.display = 'block';
+            }}
+        }}
+
         function showRadar(url, venueName) {{
             const modalElement = document.getElementById('radarModal');
             const modalTitle = document.querySelector('#radarModal .modal-title');
