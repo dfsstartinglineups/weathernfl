@@ -375,16 +375,21 @@ def generate_matchup_analysis(w, is_dome):
     if is_dome:
         return "✅ <b>Dome Environment:</b> Controlled climate with zero weather impact. Perfect passing conditions."
     
+    # Check the hourly array so the text matches the card's percentage display
+    hourly_list = w.get('hourly', [])
+    max_pop = max([h.get('precipChance', 0) for h in hourly_list], default=0) if hourly_list else 0
+    
     notes = []
     wind = w.get('windSpeed', 0)
     precip = w.get('precip', 0)
     temp = w.get('temp', 70)
 
-    if wind >= 15 and precip > 0:
+    # Trigger warnings based on actual rain accumulation OR a 30%+ probability
+    if wind >= 15 and (precip > 0 or max_pop >= 30):
         notes.append("🚨 <b>Heavy Weather:</b> Passing and kicking severely downgraded. Expect a run-heavy script.")
     elif wind >= 15:
         notes.append("💨 <b>High Winds:</b> Deep passing and long field goals downgraded.")
-    elif precip > 0:
+    elif precip > 0 or max_pop >= 30:
         notes.append("🌧️ <b>Wet Conditions:</b> Potential for sloppy play, fumbles, and dropped passes.")
     
     if temp >= 85: notes.append("🔥 <b>Heat Alert:</b> High temperatures could lead to player fatigue late in the game.")
@@ -460,7 +465,7 @@ def render_game_card(game, is_single_team=False):
     
     # Dynamic Surface Emoji: Tire (🛞) for Artificial/Turf, Seedling (🌱) for Natural Grass
     surface_lower = str(surface_type).lower()
-    surface_emoji = "🛞" if ("turf" in surface_lower or "synthetic" in surface_lower or "astro" in surface_lower or "matrix" in surface_lower) else "🌱"
+    surface_emoji = "⚫" if ("turf" in surface_lower or "synthetic" in surface_lower or "astro" in surface_lower or "matrix" in surface_lower) else "🌱"
 
     radar_url = f"https://embed.windy.com/embed2.html?lat={stadium_lat}&lon={stadium_lon}&detailLat={stadium_lat}&detailLon={stadium_lon}&width=650&height=450&zoom=11&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1"
 
