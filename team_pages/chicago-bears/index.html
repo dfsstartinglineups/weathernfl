@@ -128,7 +128,7 @@
         <div id="team-weather-container">
             
     <div class="w-100 mb-3" id="game-401874393">
-        <div class="card game-card shadow-sm border-warning border-3 bg-weather-rain" style="overflow: hidden;">
+        <div class="card game-card shadow-sm border-danger border-3 bg-weather-storm" style="overflow: hidden;">
             
             <!-- RIBBON VIEW -->
             <div class="ribbon-view p-2 position-relative" onclick="toggleSingleCard(event, '401874393')" style="cursor: pointer; display: none;">
@@ -276,8 +276,15 @@
             const modalTitle = document.querySelector('#radarModal .modal-title');
             const iframe = document.getElementById('radarFrame');
             if (modalTitle) modalTitle.innerText = `Radar: ${venueName}`;
+            
             const myModal = bootstrap.Modal.getOrCreateInstance(modalElement);
-            if (iframe) iframe.src = url;
+            if (iframe) iframe.src = '';
+            
+            const loadMap = function () {
+                if(iframe) iframe.src = url; 
+                modalElement.removeEventListener('shown.bs.modal', loadMap); 
+            };
+            modalElement.addEventListener('shown.bs.modal', loadMap);
             myModal.show();
         }
     </script>
