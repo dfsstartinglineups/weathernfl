@@ -780,8 +780,15 @@ MAIN_SITE_TEMPLATE = """<!DOCTYPE html>
         const modalTitle = document.querySelector('#radarModal .modal-title');
         const iframe = document.getElementById('radarFrame');
         if (modalTitle) modalTitle.innerText = `Radar: ${{venueName}}`;
+        
         const myModal = bootstrap.Modal.getOrCreateInstance(modalElement);
-        if (iframe) iframe.src = url;
+        if (iframe) iframe.src = '';
+        
+        const loadMap = function () {{
+            if(iframe) iframe.src = url; 
+            modalElement.removeEventListener('shown.bs.modal', loadMap); 
+        }};
+        modalElement.addEventListener('shown.bs.modal', loadMap);
         myModal.show();
     }}
     </script>
@@ -927,8 +934,15 @@ TEAM_PAGE_TEMPLATE = """<!DOCTYPE html>
             const modalTitle = document.querySelector('#radarModal .modal-title');
             const iframe = document.getElementById('radarFrame');
             if (modalTitle) modalTitle.innerText = `Radar: ${{venueName}}`;
+            
             const myModal = bootstrap.Modal.getOrCreateInstance(modalElement);
-            if (iframe) iframe.src = url;
+            if (iframe) iframe.src = '';
+            
+            const loadMap = function () {{
+                if(iframe) iframe.src = url; 
+                modalElement.removeEventListener('shown.bs.modal', loadMap); 
+            }};
+            modalElement.addEventListener('shown.bs.modal', loadMap);
             myModal.show();
         }}
     </script>
