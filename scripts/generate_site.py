@@ -396,23 +396,32 @@ def render_game_card(game, is_single_team=False):
     w = game.get('weather') or {"status": "too_early", "temp": "--", "windSpeed": 0, "precip": 0}
     is_too_early = w.get('status') == "too_early" or w.get('temp') == "--"
     
+    # Extract 5-hour forecast window metrics
+    hourly_list = w.get('hourly', [])
+    max_pop = max([h.get('precipChance', 0) for h in hourly_list], default=0) if hourly_list else 0
+    is_thunderstorm = any(h.get('isThunderstorm', False) for h in hourly_list) if hourly_list else False
+    is_snow = any(h.get('isSnow', False) for h in hourly_list) if hourly_list else False
+
     border_class = ""
     bg_class = "bg-weather-sunny"
     precip_val = w.get('precip', 0)
     wind_val = w.get('windSpeed', 0)
     temp_val = w.get('temp', 70)
 
+    # Severe Weather: Red Border & Animated Storm Gradient
     if is_too_early:
         bg_class = "bg-light"
     elif is_dome:
         bg_class = "bg-weather-roof"
-    elif precip_val > 0.5:
+    elif is_thunderstorm or is_snow or max_pop >= 60 or precip_val >= 0.25 or wind_val >= 20:
         border_class = "border-danger border-3"
         bg_class = "bg-weather-storm"
-    elif precip_val > 0:
+    # Moderate Weather: Yellow Border & Animated Rain Gradient
+    elif max_pop >= 30 or precip_val > 0 or wind_val >= 15:
         border_class = "border-warning border-3"
         bg_class = "bg-weather-rain"
-    elif wind_val >= 15:
+    # Breezy / Overcast: Cloudy Gradient
+    elif wind_val >= 12 or max_pop >= 15:
         bg_class = "bg-weather-cloudy"
 
     # Time / Status Badge
@@ -435,15 +444,19 @@ def render_game_card(game, is_single_team=False):
     away_logo = f"https://a.espncdn.com/i/teamlogos/nfl/500/{game.get('away_id', '').lower()}.png"
     home_logo = f"https://a.espncdn.com/i/teamlogos/nfl/500/{game.get('home_id', '').lower()}.png"
 
-    weather_emoji_line = f"Roof Closed 🌡️{temp_val}°" if is_dome else f"🌧️{precip_val}\" 🌡️{temp_val}° 💨{wind_val}mph"
+    display_rain = "0%" if is_dome else f"{max_pop}%"
+    weather_emoji_line = f"Roof Closed 🌡️{temp_val}°" if is_dome else f"🌧️{display_rain} 🌡️{temp_val}° 💨{wind_val}mph"
     if is_too_early:
         weather_emoji_line = "Roof Closed" if is_dome else "🔭 Forecast pending..."
 
-    display_rain = "0%" if is_dome else f"{precip_val}\""
     stadium_name = stadium.get('name', 'TBD Location')
     stadium_lat = stadium.get('lat', 39.0)
     stadium_lon = stadium.get('lon', -95.0)
     surface_type = stadium.get('surface', '-')
+    
+    # Dynamic Surface Emoji: Tire (🛞) for Artificial/Turf, Seedling (🌱) for Natural Grass
+    surface_lower = str(surface_type).lower()
+    surface_emoji = "🛞" if ("turf" in surface_lower or "synthetic" in surface_lower or "astro" in surface_lower or "matrix" in surface_lower) else "🌱"
 
     radar_url = f"https://embed.windy.com/embed2.html?lat={stadium_lat}&lon={stadium_lon}&detailLat={stadium_lat}&detailLon={stadium_lon}&width=650&height=450&zoom=11&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1"
 
@@ -489,7 +502,7 @@ def render_game_card(game, is_single_team=False):
         weather_section = f"""
             <div class="weather-row row text-center align-items-center mt-2 mx-0">
                 <div class="col-3 border-end px-1"><div class="fw-bold">{temp_val}°F</div><div class="small text-muted" style="font-size: 0.7rem;">Temp</div></div>
-                <div class="col-3 border-end px-1"><div class="fw-bold text-dark">🌱</div><div class="small text-muted" style="font-size: 0.7rem;">{surface_type}</div></div>
+                <div class="col-3 border-end px-1"><div class="fw-bold text-dark">{surface_emoji}</div><div class="small text-muted" style="font-size: 0.7rem;">{surface_type}</div></div>
                 <div class="col-3 border-end px-1"><div class="fw-bold text-primary" style="white-space: nowrap;">{display_rain}</div><div class="small text-muted" style="font-size: 0.7rem;">Rain</div></div>
                 <div class="col-3 px-1"><div class="fw-bold">{wind_val} <span style="font-size:0.7em">mph</span></div><span class="wind-badge bg-secondary text-white" style="font-size: 0.55rem; white-space: nowrap; display: inline-block; padding: 2px 4px;">💨</span></div>
             </div>
