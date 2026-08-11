@@ -378,18 +378,26 @@ def generate_matchup_analysis(w, is_dome):
     # Check the hourly array so the text matches the card's percentage display
     hourly_list = w.get('hourly', [])
     max_pop = max([h.get('precipChance', 0) for h in hourly_list], default=0) if hourly_list else 0
+    is_thunderstorm = any(h.get('isThunderstorm', False) for h in hourly_list) if hourly_list else False
+    is_snow = any(h.get('isSnow', False) for h in hourly_list) if hourly_list else False
     
     notes = []
     wind = w.get('windSpeed', 0)
     precip = w.get('precip', 0)
     temp = w.get('temp', 70)
 
+    # Trigger severe weather alerts
+    if is_thunderstorm:
+        notes.append("⚡ <b>Lightning Risk:</b> Thunderstorms in the area. High probability of in-game weather delays.")
+    if is_snow:
+        notes.append("🌨️ <b>Snow Conditions:</b> Slippery footing, reduced visibility, and tough kicking conditions. Expect a run-heavy script.")
+
     # Trigger warnings based on actual rain accumulation OR a 30%+ probability
-    if wind >= 15 and (precip > 0 or max_pop >= 30):
+    if wind >= 15 and (precip > 0 or max_pop >= 30) and not is_snow:
         notes.append("🚨 <b>Heavy Weather:</b> Passing and kicking severely downgraded. Expect a run-heavy script.")
     elif wind >= 15:
         notes.append("💨 <b>High Winds:</b> Deep passing and long field goals downgraded.")
-    elif precip > 0 or max_pop >= 30:
+    elif (precip > 0 or max_pop >= 30) and not is_snow and not is_thunderstorm:
         notes.append("🌧️ <b>Wet Conditions:</b> Potential for sloppy play, fumbles, and dropped passes.")
     
     if temp >= 85: notes.append("🔥 <b>Heat Alert:</b> High temperatures could lead to player fatigue late in the game.")
