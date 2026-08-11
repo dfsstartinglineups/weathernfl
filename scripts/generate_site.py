@@ -264,6 +264,25 @@ def get_current_nfl_schedule(venues_dict):
         res_data = requests.get(schedule_url, timeout=10).json()
         events = res_data.get('events', [])
         
+        # --- AUTO-ADVANCE WEEK CHECK ---
+        # If ALL games in ESPN's active week are FINAL ('post'), automatically bump to the next week
+        all_final = len(events) > 0 and all(e.get('status', {}).get('type', {}).get('state') == 'post' for e in events)
+        
+        if all_final:
+            print(f"🏁 All games for {week_label} are FINAL. Automatically advancing to the next week's slate...")
+            if stype == 1 and wk >= 4:
+                stype, wk = 2, 1
+            elif stype == 2 and wk >= 18:
+                stype, wk = 3, 1
+            else:
+                wk += 1
+
+            week_label = get_week_label(stype, wk)
+            schedule_url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates={season_year}&seasontype={stype}&week={wk}"
+            res_data = requests.get(schedule_url, timeout=10).json()
+            events = res_data.get('events', [])
+        # -------------------------------
+
         # --- GAME DAY FREQUENCY CHECK ---
         import zoneinfo
         import sys
