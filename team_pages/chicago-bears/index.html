@@ -1,67 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-QYCQBXBBJ7"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
+
       gtag('config', 'G-QYCQBXBBJ7');
     </script>
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chicago Bears @ Cincinnati Bengals Weather Forecast at Paycor Stadium | Rain & Wind Forecast</title>
+    <title>Chicago Bears vs Cleveland Browns Weather Forecast at Soldier Field | Rain & Wind Forecast</title>
     
-    <meta name="description" content="View the live weather forecast for the Chicago Bears @ Cincinnati Bengals game at Paycor Stadium. Track real-time rain delay risks, stadium wind direction, hourly temperatures, and betting odds.">
-    <meta name="keywords" content="Chicago Bears weather, Paycor Stadium wind direction, Paycor Stadium rain delay, Chicago Bears game weather today, fantasy football weather, NFL weather">
+    <meta name="description" content="View the live weather forecast for the Chicago Bears vs Cleveland Browns game at Soldier Field. Track real-time rain delay risks, stadium wind direction, hourly temperatures, and betting odds.">
+    <meta name="keywords" content="Chicago Bears weather, Soldier Field wind direction, Soldier Field rain delay, Chicago Bears game weather today, fantasy football weather, NFL weather">
     <link rel="canonical" href="https://weathernfl.com/team_pages/chicago-bears/" />
     
-    <meta property="og:title" content="Chicago Bears @ Cincinnati Bengals Game Weather at Paycor Stadium - Weather NFL">
-    <meta property="og:description" content="Track stadium wind, hourly rain risks, and weather impact analytics for the Chicago Bears @ Cincinnati Bengals game at Paycor Stadium.">
+    <!-- OpenGraph / Social Meta -->
+    <meta property="og:title" content="Chicago Bears vs Cleveland Browns Game Weather at Soldier Field - Weather NFL">
+    <meta property="og:description" content="Track stadium wind, hourly rain risks, and weather impact analytics for the Chicago Bears vs Cleveland Browns game at Soldier Field.">
     <meta property="og:url" content="https://weathernfl.com/team_pages/chicago-bears/">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://weathernfl.com/social-share.png">
     
+    <!-- Comprehensive Twitter Meta Tags (Compact Summary Mode) -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@weathernfldaily">
     <meta name="twitter:creator" content="@weathernfldaily">
-    <meta name="twitter:title" content="Chicago Bears @ Cincinnati Bengals Game Weather at Paycor Stadium - Weather NFL">
-    <meta name="twitter:description" content="Track stadium wind, hourly rain risks, and weather impact analytics for the Chicago Bears @ Cincinnati Bengals game at Paycor Stadium.">
+    <meta name="twitter:title" content="Chicago Bears vs Cleveland Browns Game Weather at Soldier Field - Weather NFL">
+    <meta name="twitter:description" content="Track stadium wind, hourly rain risks, and weather impact analytics for the Chicago Bears vs Cleveland Browns game at Soldier Field.">
     <meta name="twitter:image" content="https://weathernfl.com/social-share.png">
     
     <script type="application/ld+json">
 {
     "@context": "https://schema.org",
     "@type": "SportsEvent",
-    "name": "Chicago Bears @ Cincinnati Bengals Game",
+    "name": "Chicago Bears vs Cleveland Browns Game",
     "location": {
         "@type": "Place",
-        "name": "Paycor Stadium",
-        "address": "Cincinnati, OH"
-    },
-    "startDate": "2026-08-22T23:00Z"
+        "name": "Soldier Field",
+        "address": "Chicago, IL"
+    }
 }
     </script>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    
     <style>
         body { background-color: #f8f9fa; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; } 
         .main-container { max-width: 520px; margin: 30px auto; padding: 0 15px; }
-        .game-card { border: 1px solid #dee2e6; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; overflow: hidden; transition: transform 0.2s; }
+        .game-card { border: 1px solid #dee2e6; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; overflow: hidden; }
         .weather-row { font-size: 0.9rem; border-top: 1px solid #f1f3f5; padding-top: 8px; margin-top: 8px; padding-bottom: 4px; }
         .stadium-name { color: #6c757d; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         .wind-badge { font-size: 0.85rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; display: inline-block; }
         .analysis-box { background-color: rgba(255, 255, 255, 0.6); border-left: 4px solid #0d6efd; padding: 8px 12px; margin-top: 12px; font-size: 0.8rem; color: #495057; line-height: 1.4; border-radius: 0 4px 4px 0; }
         .analysis-title { font-weight: 800; text-transform: uppercase; font-size: 0.7rem; color: #0d6efd; display: block; margin-bottom: 4px; letter-spacing: 0.5px; }
+        
+        /* Hourly Forecast CSS */
         .hourly-scroll-container { display: flex; overflow-x: auto; gap: 8px; padding: 8px 4px; margin-top: 8px; border-top: 1px solid rgba(0,0,0,0.05); scrollbar-width: thin; }
         .hour-card { display: flex; flex: 1; flex-direction: column; align-items: center; min-width: 60px; text-align: center; }
         .hour-time { font-size: 0.75rem; font-weight: 600; color: #6c757d; margin-bottom: 2px; }
         .hour-icon { font-size: 1.3rem; line-height: 1; margin-bottom: 2px; }
         .hour-pop { font-size: 0.65rem; color: #5ac8fa; font-weight: 700; line-height: 1; height: 12px; margin-bottom: 2px; }
         .hour-temp { font-size: 0.85rem; font-weight: 600; color: #212529; line-height: 1; }
-
+        
+        /* Flowing Weather Gradients */
         @keyframes weather-flow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         .bg-weather-sunny { background: linear-gradient(-45deg, #e3f2fd, #e1f5fe, #f1f8e9); background-size: 300% 300%; animation: weather-flow 15s ease infinite; }
         .bg-weather-cloudy { background: linear-gradient(-45deg, #f5f5f5, #e0e0e0, #eeeeee); background-size: 300% 300%; animation: weather-flow 20s ease infinite; }
@@ -81,7 +91,7 @@
             <div class="d-flex align-items-center gap-2">
                 <select id="team-nav-select" class="form-select form-select-sm fw-bold" style="background-color: #1e293b; color: #adb5bd; border: 1px solid #334155; cursor: pointer; max-width: 180px;" onchange="if(this.value) window.location.href=this.value;">
                     <option value="">Switch Team</option>
-                                        <option value="/team_pages/arizona-cardinals/">Arizona Cardinals</option>
+                    <option value="/team_pages/arizona-cardinals/">Arizona Cardinals</option>
                     <option value="/team_pages/atlanta-falcons/">Atlanta Falcons</option>
                     <option value="/team_pages/baltimore-ravens/">Baltimore Ravens</option>
                     <option value="/team_pages/buffalo-bills/">Buffalo Bills</option>
@@ -113,6 +123,7 @@
                     <option value="/team_pages/tampa-bay-buccaneers/">Tampa Bay Buccaneers</option>
                     <option value="/team_pages/tennessee-titans/">Tennessee Titans</option>
                     <option value="/team_pages/washington-commanders/">Washington Commanders</option>
+
                 </select>
                 <a href="/" class="btn btn-sm btn-outline-light px-3 fw-bold" style="font-size: 0.75rem;">
                     Full Slate
@@ -122,112 +133,11 @@
     </nav>
     
     <div class="main-container">
-        <div class="text-center mt-3 mb-3">
-            <h1 class="h4 fw-bold text-dark mb-1">Chicago Bears Weather Forecast</h1>
-            <p class="text-muted mb-0" style="font-size: 0.85rem;">Paycor Stadium</p>
-        </div>
         <div id="team-weather-container">
-            
-    <div class="w-100 mb-3" id="game-401873289">
-        <div class="card game-card shadow-sm  bg-weather-cloudy" style="overflow: hidden;">
-            
-            <!-- RIBBON VIEW -->
-            <div class="ribbon-view p-2 position-relative" onclick="toggleSingleCard(event, '401873289')" style="cursor: pointer; display: none;">
-                <div class="d-flex align-items-center mb-1">
-                    <span class="badge bg-light text-dark border flex-shrink-0 px-2 py-1" style="font-size: 0.65rem;">Sat 7:00 PM</span>
-                    <div class="fw-bold text-dark text-center flex-grow-1 ms-2" style="font-size: 0.75rem; letter-spacing: 0.2px;">
-                        🌧️18% 🌡️76° 💨10mph
-                    </div>
-                </div>
-                <div class="d-flex align-items-center mt-1" style="gap: 4px;">
-                    <div class="d-flex align-items-center flex-shrink-0" style="gap: 3px;">
-                        <img src="https://a.espncdn.com/i/teamlogos/nfl/500/chi.png" style="width: 16px; height: 16px; object-fit: contain;" onerror="this.style.display='none'">
-                        <span class="fw-bold text-dark lh-1" style="font-size: 0.75rem;">Bears</span>
-                    </div>
-                    <span class="fw-bold text-muted flex-shrink-0 lh-1" style="font-size: 0.7rem;">@</span>
-                    <div class="d-flex align-items-center flex-shrink-0" style="gap: 3px;">
-                        <img src="https://a.espncdn.com/i/teamlogos/nfl/500/cin.png" style="width: 16px; height: 16px; object-fit: contain;" onerror="this.style.display='none'">
-                        <span class="fw-bold text-dark lh-1" style="font-size: 0.75rem;">Bengals</span>
-                    </div>
-                    <div class="text-truncate text-end fw-bold flex-grow-1 ms-1" style="font-size: 0.7rem; opacity: 0.75;">Paycor Stadium</div>
-                </div>
+            <div class="text-center p-5 text-muted">
+                <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+                Loading Chicago Bears forecast...
             </div>
-
-            <!-- FULL CARD VIEW -->
-            <div class="full-card-view" onclick="toggleSingleCard(event, '401873289')" style="cursor: pointer; display: block;">
-                <div class="card-body px-2 pt-2 pb-2"> 
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="badge bg-light text-dark border">Sat 7:00 PM</span>
-                        <span class="stadium-name text-truncate text-end flex-grow-1 ms-2" style="font-size: 0.8rem; font-weight: 600;">Paycor Stadium</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center px-1 mb-1">
-                        <div class="d-flex align-items-center text-truncate" style="width: 45%; min-width: 0;"> 
-                            <img src="https://a.espncdn.com/i/teamlogos/nfl/500/chi.png" class="me-2" style="width: 24px; height: 24px; object-fit: contain;" onerror="this.style.display='none'">
-                            <div class="fw-bold lh-sm text-dark text-truncate" style="font-size: 0.95rem;">Bears</div>
-                        </div>
-                        <div class="text-center text-muted fw-bold" style="width: 10%; font-size: 0.8rem;">@</div>
-                        <div class="d-flex align-items-center justify-content-end text-truncate" style="width: 45%; min-width: 0;"> 
-                            <img src="https://a.espncdn.com/i/teamlogos/nfl/500/cin.png" class="me-2" style="width: 24px; height: 24px; object-fit: contain;" onerror="this.style.display='none'">
-                            <div class="fw-bold lh-sm text-dark text-truncate text-end" style="font-size: 0.95rem;">Bengals</div>
-                        </div>
-                    </div>
-                    
-            <div class="weather-row row text-center align-items-center mt-2 mx-0">
-                <div class="col-3 border-end px-1"><div class="fw-bold">76°F</div><div class="small text-muted" style="font-size: 0.7rem;">Temp</div></div>
-                <div class="col-3 border-end px-1"><div class="fw-bold text-dark">⚫</div><div class="small text-muted" style="font-size: 0.7rem;">Turf</div></div>
-                <div class="col-3 border-end px-1"><div class="fw-bold text-primary" style="white-space: nowrap;">18%</div><div class="small text-muted" style="font-size: 0.7rem;">Rain</div></div>
-                <div class="col-3 px-1"><div class="fw-bold">10 <span style="font-size:0.7em">mph</span></div><span class="wind-badge bg-secondary text-white" style="font-size: 0.55rem; white-space: nowrap; display: inline-block; padding: 2px 4px;">💨</span></div>
-            </div>
-            <div class="hourly-scroll-container">
-                    <div class="hour-card">
-                        <div class="hour-time">6PM</div>
-                        <div class="hour-icon">⛅</div>
-                        <div class="hour-pop">&nbsp;</div>
-                        <div class="hour-temp">80°</div>
-                    </div>
-                
-                    <div class="hour-card">
-                        <div class="hour-time">7PM</div>
-                        <div class="hour-icon">⛅</div>
-                        <div class="hour-pop">&nbsp;</div>
-                        <div class="hour-temp">76°</div>
-                    </div>
-                
-                    <div class="hour-card">
-                        <div class="hour-time">8PM</div>
-                        <div class="hour-icon">⛅</div>
-                        <div class="hour-pop">&nbsp;</div>
-                        <div class="hour-temp">73°</div>
-                    </div>
-                
-                    <div class="hour-card">
-                        <div class="hour-time">9PM</div>
-                        <div class="hour-icon">⛅</div>
-                        <div class="hour-pop">&nbsp;</div>
-                        <div class="hour-temp">71°</div>
-                    </div>
-                
-                    <div class="hour-card">
-                        <div class="hour-time">10PM</div>
-                        <div class="hour-icon">⛅</div>
-                        <div class="hour-pop">&nbsp;</div>
-                        <div class="hour-temp">70°</div>
-                    </div>
-                </div>
-            <div class="mt-2 mb-2">
-                <button class="btn btn-sm btn-outline-primary w-100 py-1 fw-bold" style="font-size: 0.8rem;" onclick="showRadar('https://embed.windy.com/embed2.html?lat=39.0955&lon=-84.5161&detailLat=39.0955&detailLon=-84.5161&width=650&height=450&zoom=11&level=surface&overlay=rain&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=mph&metricTemp=%C2%B0F&radarRange=-1', 'Paycor Stadium')">🗺️ View Live Radar Map</button>
-            </div>
-            <div class="analysis-box">
-                <span class="analysis-title">✨ Weather Impact</span>
-                ✅ <b>Neutral:</b> Fair weather conditions. No significant weather impact.
-            </div>
-        
-                </div>
-            </div>
-
-        </div>
-    </div>
-    
         </div>
     </div>
     
@@ -246,48 +156,16 @@
         </div>
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        window.TARGET_TEAM_ID = "CHI";
         document.addEventListener("DOMContentLoaded", () => {
             const selectMenu = document.getElementById("team-nav-select");
             if (selectMenu) {
                 selectMenu.value = `/team_pages/chicago-bears/`;
             }
         });
-        
-        function toggleSingleCard(e, gameId) {
-            if (e && e.target.closest('a, button, input, label, select')) return; 
-            const card = document.getElementById(`game-${gameId}`);
-            if (!card) return;
-            
-            const ribbon = card.querySelector('.ribbon-view');
-            const full = card.querySelector('.full-card-view');
-            
-            if (ribbon.style.display === 'none') {
-                ribbon.style.display = 'block';
-                full.style.display = 'none';
-            } else {
-                ribbon.style.display = 'none';
-                full.style.display = 'block';
-            }
-        }
-
-        function showRadar(url, venueName) {
-            const modalElement = document.getElementById('radarModal');
-            const modalTitle = document.querySelector('#radarModal .modal-title');
-            const iframe = document.getElementById('radarFrame');
-            if (modalTitle) modalTitle.innerText = `Radar: ${venueName}`;
-            
-            const myModal = bootstrap.Modal.getOrCreateInstance(modalElement);
-            if (iframe) iframe.src = '';
-            
-            const loadMap = function () {
-                if(iframe) iframe.src = url; 
-                modalElement.removeEventListener('shown.bs.modal', loadMap); 
-            };
-            modalElement.addEventListener('shown.bs.modal', loadMap);
-            myModal.show();
-        }
     </script>
+    <script src="../../js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
